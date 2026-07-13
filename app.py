@@ -218,5 +218,4 @@ with col_output:
     else:
         # Default starting visual output
         st.info("Awaiting telemetry evaluation command. Configure parameters on the left and click 'Evaluate' to boot calculations.")
-        st.image("https://images.unsplash.com/photo-1463123081488-729f60c1926d?w=800&auto=format&fit=crop&q=80", 
-                 caption="Agri-Tech Sensor Grid Standby Mode", use_column_width=True)
+        st.image[![20260425-182536.avif](https://i.postimg.cc/MGLPFQ3F/20260425-182536.avif)](https://postimg.cc/mcQyctsY)
