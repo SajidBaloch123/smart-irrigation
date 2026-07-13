@@ -10,12 +10,12 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# Custom premium styling (integrated branding from image_6.png)
+# Custom premium styling (integrated branding)
 st.markdown("""
     <style>
     .block-container { padding-top: 1.5rem; }
     
-    /* System Lead Header Card (using branding style from image_6.png) */
+    /* System Lead Header Card */
     .lead-engineer-card {
         background: rgba(15, 32, 39, 0.9);
         border-radius: 12px;
@@ -67,9 +67,7 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# --- NEW: Enhanced Multi-Image Data Structure ---
-# Each crop asset now includes 3 distinct imagery tracks:
-# 1. Telemetry/Plant view, 2. Field landscape, 3. Active Irrigation system
+# --- Multi-Image Data Structure ---
 CROP_ASSETS = {
     "Wheat": {
         "depth_mm": 50,
@@ -133,7 +131,7 @@ def calculate_irrigation_needs(crop_type, current_moisture, temperature, humidit
         
     return status, round(moisture_deficit_pct, 1), round(water_required_liters_m2, 2)
 
-# --- 1. Top Section: New Lead Engineer Branding Card ---
+# --- 1. Top Section: Lead Engineer Branding Card ---
 st.markdown("""
     <div class="lead-engineer-card">
         <div>
@@ -223,7 +221,6 @@ with col_output:
                 except Exception as e:
                     st.error(f"❌ AI Inference Failure: {str(e)}")
     else:
-        # --- NEW: STANDBY Visual Section (Replaces the Egg) ---
-        # Display image_6.png as the modern, attractive standby image.
+        # --- NEW Standby Visual (Direct, verified, stunning irrigation image) ---
         st.info("System in Active-Standby Mode. Configure inputs on the left and execute to generate diagnostics.")
-        st.image("https://raw.githubusercontent.com/username/repository_name/main/path/to/image_6.png", caption="System Status: Field Node A — Optimal Stability Telemetry (Sajid Ali, System lead)", use_column_width=True)
+        st.image("https://images.unsplash.com/photo-1500937386664-56d1dfef3854?w=1000&auto=format&fit=crop&q=80", caption="System Status: Field Node A — Active Telemetry Standby (Sajid Ali, System lead)", use_column_width=True)
