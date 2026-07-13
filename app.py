@@ -218,5 +218,4 @@ with col_output:
     else:
         # Default starting visual output
         st.info("Awaiting telemetry evaluation command. Configure parameters on the left and click 'Evaluate' to boot calculations.")
-st.image("https://i.ibb.co/your-unique-code/my-farm-image.jpg", 
-         caption="System Standby Mode - Telemetry Offline", use_column_width=True)
+st.image("https://i.postimg.cc/CLyj6Nhr/Gemini-Generated-Image-o59yqgo59yqgo59y.png", caption="Lead Engineer: Sajid Ali — Precision Field Deployment", use_column_width=True)
