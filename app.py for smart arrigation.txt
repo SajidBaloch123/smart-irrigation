@@ -1,0 +1,129 @@
+app.py
+
+import streamlit as st
+from langchain_groq import ChatGroq
+from langchain_core.prompts import ChatPromptTemplate
+
+# Set up page layout style
+st.set_page_config(
+    page_title="Smart Irrigation Dashboard",
+    page_icon="🌾",
+    layout="wide"
+)
+
+# Custom styling
+st.markdown("""
+    <style>
+    .block-container { padding-top: 2rem; }
+    div.stButton > button:first-child {
+        background-color: #05B292;
+        color: white;
+        border-radius: 50px;
+        width: 100%;
+        font-weight: bold;
+    }
+    </style>
+""", unsafe_allow_html=True)
+
+# --- Mathematical Rules Engine ---
+def calculate_irrigation_needs(crop_type, current_moisture, temperature, humidity):
+    crop_baselines = {
+        "Wheat": {"min": 45, "max": 70, "depth_mm": 50},
+        "Rice": {"min": 70, "max": 95, "depth_mm": 100},
+        "Cotton": {"min": 50, "max": 75, "depth_mm": 65},
+        "Maize": {"min": 55, "max": 80, "depth_mm": 60},
+        "Vegetables": {"min": 60, "max": 85, "depth_mm": 40}
+    }
+    
+    target = crop_baselines.get(crop_type, {"min": 50, "max": 75, "depth_mm": 50})
+    
+    if current_moisture < target["min"]:
+        status = "CRITICAL UNDER-WATERING: Valve Trigger Activated Automatically"
+        moisture_deficit_pct = target["max"] - current_moisture
+        water_required_liters_m2 = (moisture_deficit_pct / 100.0) * target["depth_mm"]
+    elif current_moisture > target["max"]:
+        status = "ALERT: FIELD SATURATED / WATERLOGGING RISK"
+        moisture_deficit_pct = 0
+        water_required_liters_m2 = 0
+    else:
+        status = "OPTIMAL STABILITY: No Immediate Watering Required"
+        moisture_deficit_pct = 0
+        water_required_liters_m2 = 0
+        
+    if temperature > 35 and water_required_liters_m2 > 0:
+        water_required_liters_m2 *= 1.15
+        
+    return status, round(moisture_deficit_pct, 1), round(water_required_liters_m2, 2)
+
+# --- Main Dashboard Window ---
+st.title("🌾 Smart Irrigation Automation Interface")
+st.caption("AI-IoT Precision Agriculture Telemetry System")
+st.hr()
+
+# Sidebar Setup
+st.sidebar.header("🔑 Authentication")
+groq_api_key = st.sidebar.text_input("Groq API Key", type="password", placeholder="gsk_...")
+
+col_input, col_output = st.columns([1, 1], gap="large")
+
+with col_input:
+    st.subheader("🌾 Real-Time Field Telemetry")
+    crop_type = st.selectbox("Target Crop", ["Wheat", "Rice", "Cotton", "Maize", "Vegetables"])
+    moisture_pct = st.slider("Current Soil Moisture Level (%)", 10, 100, 35)
+    temp_c = st.slider("Field Ambient Temperature (°C)", 10, 50, 38)
+    humidity_pct = st.slider("Atmospheric Humidity Ratio (%)", 10, 100, 40)
+    weather_forecast = st.radio(
+        "Imminent Weather Forecast (24H)",
+        ["Sunny / Clear Sky", "Overcast / High Humidity", "Heavy Rain Expected", "Scattered Showers"]
+    )
+    execute_btn = st.button("🧠 Evaluate & Compute System Logic")
+
+with col_output:
+    st.subheader("📊 Automated Operations & Agronomist Logs")
+    if execute_btn:
+        if not groq_api_key:
+            st.warning("⚠️ Setup Error: Please provide a valid Groq API Key in the sidebar.")
+        else:
+            with st.spinner("Analyzing telemetry data..."):
+                valve_status, deficit_pct, water_volume = calculate_irrigation_needs(
+                    crop_type, moisture_pct, temp_c, humidity_pct
+                )
+                
+                metric_col1, metric_col2 = st.columns(2)
+                with metric_col1:
+                    st.metric(label="Moisture Deficit", value=f"{deficit_pct}%")
+                with metric_col2:
+                    st.metric(label="Calculated Volume Dosage", value=f"{water_volume} L/m²")
+                
+                st.info(f"**System Automation Log:** {valve_status}")
+                
+                try:
+                    llm = ChatGroq(groq_api_key=groq_api_key, model_name="llama-3.3-70b-versatile", temperature=0.1)
+                    prompt = ChatPromptTemplate.from_template("""
+                    You are an advanced AI Smart Irrigation Controller and Expert Agronomist.
+                    Analyze the following real-time field telemetry metrics to output an operational strategy.
+                    - Crop: {crop_type}
+                    - Current Moisture: {moisture_pct}%
+                    - Temperature: {temp_c}°C
+                    - Humidity: {humidity_pct}%
+                    - Forecast: {weather_forecast}
+                    - Calculated Volume: {water_volume} L/m²
+                    
+                    Provide a concise, professional strategy covering Field Status Assessment, Exact Watering Schedule Guide, and Automation Override Log.
+                    """)
+                    
+                    chain = prompt | llm
+                    response = chain.invoke({
+                        "crop_type": crop_type,
+                        "moisture_pct": moisture_pct,
+                        "temp_c": temp_c,
+                        "humidity_pct": humidity_pct,
+                        "weather_forecast": weather_forecast,
+                        "water_volume": water_volume
+                    })
+                    st.markdown("### 📋 Agronomic Assessment Strategy")
+                    st.write(response.content)
+                except Exception as e:
+                    st.error(f"❌ AI Inference Failure: {str(e)}")
+    else:
+        st.write("*Awaiting telemetry data... Adjust parameters and click compute.*")
