@@ -218,4 +218,4 @@ with col_output:
     else:
         # Default starting visual output
         st.info("Awaiting telemetry evaluation command. Configure parameters on the left and click 'Evaluate' to boot calculations.")
-        st.image[![20260425-182536.avif](https://i.postimg.cc/MGLPFQ3F/20260425-182536.avif)](https://postimg.cc/mcQyctsY)
+st.image("https://i.postimg.cc/MGLPFQ3F/20260425-182536.avif", caption="System Standby Mode - Telemetry Offline", use_column_width=True)
