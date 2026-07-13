@@ -119,26 +119,25 @@ SEARCH_KNOWLEDGE_BASE = {
     }
 }
 
-# --- Multi-Image Data Structure ---
-CROP_ASSETS = {
-    "Wheat": {
-        "depth_mm": 50,
-        "moisture_range": [45, 70],
-        "images": [
-            {"url": "https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?w=500&q=80", "caption": "Asset Track 1: Young Wheat Cultivar Development"},
-            {"url": "https://images.unsplash.com/photo-1628155930542-3c7a64e2c833?w=500&q=80", "caption": "Asset Track 2: Pivot Irrigation Array Field Deployment"},
-            {"url": "https://images.unsplash.com/photo-1579621970563-ebec7560ff3e?w=500&q=80", "caption": "Asset Track 3: Fine Micro-Drip Root Zone Line"}
-        ]
-    },
-    "Rice": {
-        "depth_mm": 100,
-        "moisture_range": [70, 95],
-        "images": [
-            {"url": "https://images.unsplash.com/photo-1536256263959-770b48d82b0a?w=500&q=80", "caption": "Asset Track 1: Submerged Rice Paddy Telemetry Point"},
-            {"url": "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=500&q=80", "caption": "Asset Track 2: Terraced Rice Field Water Sluice Control"},
-            {"url": "https://images.unsplash.com/photo-1520626872945-1d13f707f433?w=500&q=80", "caption": "Asset Track 3: Precision Flood Basin Laser Leveling"}
-        ]
-    },
+# Only run search and show outputs if the user has actually typed something in the search bar
+if len(search_query) > 0:
+    matched = False
+    for keyword, data in SEARCH_KNOWLEDGE_BASE.items():
+        if keyword in search_query:
+            matched = True
+            st.markdown("---")
+            search_col_text, search_col_img = st.columns([1, 1], gap="large")
+            with search_col_text:
+                st.subheader(data["title"])
+                st.write(data["desc"])
+                st.success(f"✔ Live telemetry search match: Database records verified.")
+            with search_col_img:
+                st.image(data["url"], caption=f"Component Reference: {data['title']}", use_column_width=True)
+            break
+            
+    # Show warning ONLY if the user typed a word but it didn't match our database
+    if not matched:
+        st.warning(f"⚠️ No specific match found for '{search_query}'.")
     "Cotton": {
         "depth_mm": 65,
         "moisture_range": [50, 75],
