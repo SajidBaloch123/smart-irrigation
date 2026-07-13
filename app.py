@@ -223,4 +223,4 @@ with col_output:
     else:
         # --- NEW Standby Visual (Beautiful Agriculture Irrigation Field) ---
         st.info("System in Active-Standby Mode. Configure inputs on the left and execute to generate diagnostics.")
-        st.image("https://images.unsplash.com/photo-1500937386664-56d1dfef3854?w=1000&auto=format&fit=crop&q=80", caption="System Status: Field Node A — Active Telemetry Standby (Sajid Ali, System lead)", use_column_width=True)
+st.image("https://i.postimg.cc/CLyj6Nhr/Gemini-Generated-Image-o59yqgo59yqgo59y.png", caption="Lead Engineer: Sajid Ali — Precision Field Deployment", use_column_width=True)
