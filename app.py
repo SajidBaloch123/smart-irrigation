@@ -56,7 +56,7 @@ def calculate_irrigation_needs(crop_type, current_moisture, temperature, humidit
 # --- Main Dashboard Window ---
 st.title("🌾 Smart Irrigation Automation Interface")
 st.caption("AI-IoT Precision Agriculture Telemetry System")
-st.hr()
+st.divider()
 
 # Sidebar Setup
 st.sidebar.header("🔑 Authentication")
