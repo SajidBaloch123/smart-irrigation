@@ -221,6 +221,6 @@ with col_output:
                 except Exception as e:
                     st.error(f"❌ AI Inference Failure: {str(e)}")
     else:
-        # --- NEW Standby Visual (Direct, verified, stunning irrigation image) ---
+        # --- NEW Standby Visual (Beautiful Agriculture Irrigation Field) ---
         st.info("System in Active-Standby Mode. Configure inputs on the left and execute to generate diagnostics.")
         st.image("https://images.unsplash.com/photo-1500937386664-56d1dfef3854?w=1000&auto=format&fit=crop&q=80", caption="System Status: Field Node A — Active Telemetry Standby (Sajid Ali, System lead)", use_column_width=True)
