@@ -286,4 +286,19 @@ with col_output:
                     - Current Moisture: {moisture_pct}%
                     - Temperature: {temp_c}°C
                     - Humidity: {humidity_pct}%
-                    -
+                    - Forecast: {weather_forecast}
+                    - Calculated Volume: {water_volume} L/m²
+                    
+                    Provide a concise, professional strategy covering Field Status Assessment, Exact Watering Schedule Guide, and Automation Override Log.
+                    """)
+                    
+                    chain = prompt | llm
+                    response = chain.invoke({"crop_type": crop_type, "moisture_pct": moisture_pct, "temp_c": temp_c, "humidity_pct": humidity_pct, "weather_forecast": weather_forecast, "water_volume": water_volume})
+                    st.markdown("### 📋 Agronomic Assessment Strategy")
+                    st.write(response.content)
+                except Exception as e:
+                    st.error(f"❌ AI Inference Failure: {str(e)}")
+    else:
+        # --- Standby Visual (Custom Lead Node Wallpaper) ---
+        st.info("System in Active-Standby Mode. Configure inputs on the left and execute to generate diagnostics.")
+        st.image("https://i.postimg.cc/CLyj6Nhr/Gemini-Generated-Image-o59yqgo59yqgo59y.png", caption="Lead Engineer: Sajid Ali — Precision Field Deployment", use_column_width=True)
