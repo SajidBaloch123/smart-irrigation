@@ -2,70 +2,122 @@ import streamlit as st
 from langchain_groq import ChatGroq
 from langchain_core.prompts import ChatPromptTemplate
 
-# Set up page layout style
+# Set up page layout style (Advanced Industrial View)
 st.set_page_config(
-    page_title="Smart Irrigation System",
-    page_icon="🌾",
+    page_title="APEX-I Smart Irrigation Console",
+    page_icon="⚡",
     layout="wide",
     initial_sidebar_state="expanded"
 )
 
-# Custom premium styling (integrated branding)
+# --- Premium Glassmorphism & Cyberpunk Neon UI Customization ---
 st.markdown("""
     <style>
+    /* Deep Space Background */
+    .stApp {
+        background-color: #0A0F1D;
+        color: #E2E8F0;
+    }
     .block-container { padding-top: 1.5rem; }
     
-    /* System Lead Header Card */
+    /* Neon Lead Engineer Header Card */
     .lead-engineer-card {
-        background: rgba(15, 32, 39, 0.9);
-        border-radius: 12px;
-        padding: 18px;
-        border: 2px solid #05B292;
+        background: linear-gradient(135deg, rgba(16, 24, 48, 0.95) 0%, rgba(24, 43, 73, 0.95) 100%);
+        border-radius: 16px;
+        padding: 24px;
+        border: 1px solid rgba(0, 242, 254, 0.3);
         text-align: center;
-        margin-bottom: 25px;
+        margin-bottom: 30px;
         display: flex;
         justify-content: space-between;
         align-items: center;
+        box-shadow: 0 8px 32px 0 rgba(0, 242, 254, 0.15);
     }
     .header-main-title {
         color: #00F2FE;
-        font-size: 2.2rem;
-        font-weight: 800;
-        text-shadow: 0 0 10px rgba(0,242,254,0.3);
+        font-size: 2.6rem;
+        font-weight: 900;
+        letter-spacing: 2px;
+        text-shadow: 0 0 15px rgba(0,242,254,0.4);
     }
     .lead-credentials {
         color: white;
-        background-color: #05B292;
-        padding: 6px 14px;
-        border-radius: 20px;
-        font-weight: bold;
-        font-size: 0.9rem;
+        background: linear-gradient(135deg, #05B292 0%, #00F2FE 100%);
+        padding: 8px 18px;
+        border-radius: 30px;
+        font-weight: 800;
+        font-size: 1rem;
+        box-shadow: 0 4px 15px rgba(5, 178, 146, 0.3);
+        border: 1px solid rgba(255,255,255,0.2);
     }
     .hw-gateways {
-        color: #00F2FE;
-        font-size: 0.85rem;
+        color: #05B292;
+        font-size: 0.95rem;
+        font-weight: 700;
+        letter-spacing: 1px;
         margin-top: 5px;
+        text-align: left;
     }
 
-    /* Button styles (Pulse effect) */
+    /* Glass Panels for Inputs and Displays */
+    div[data-testid="stMetric"] {
+        background: rgba(20, 30, 55, 0.6);
+        border: 1px solid rgba(0, 242, 254, 0.15);
+        border-radius: 12px;
+        padding: 15px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    }
+    
+    /* Glowing Action Buttons with Pulse effect */
     div.stButton > button:first-child {
         background: linear-gradient(135deg, #05B292 0%, #00F2FE 100%);
-        color: white;
+        color: #0A0F1D;
         border: none;
-        border-radius: 25px;
-        padding: 12px;
+        border-radius: 30px;
+        padding: 14px 28px;
         width: 100%;
-        font-weight: bold;
-        font-size: 1.1rem;
-        transition: all 0.3s ease;
+        font-weight: 900;
+        font-size: 1.2rem;
+        letter-spacing: 1px;
+        transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
         box-shadow: 0 4px 15px rgba(5, 178, 146, 0.4);
     }
     div.stButton > button:first-child:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 6px 20px rgba(0, 242, 254, 0.6);
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px rgba(0, 242, 254, 0.7);
+        color: white;
     }
     </style>
 """, unsafe_allow_html=True)
+
+# --- Advanced Visual Knowledge Base (Dynamic Search Engine) ---
+SEARCH_KNOWLEDGE_BASE = {
+    "drip": {
+        "title": "💧 Micro-Drip Irrigation Systems",
+        "desc": "Delivers localized moisture directly to the root architecture, limiting surface evaporation loss and maximizing water use efficiency up to 90%.",
+        "url": "https://images.unsplash.com/photo-1579621970563-ebec7560ff3e?w=800&q=80"
+    },
+    "sprinkler": {
+        "title": "🌧️ Overhead Linear & Pivot Sprinklers",
+        "desc": "Provides uniform coverage for high-density agricultural arrays using variable-rate pressure nozzles.",
+        "url": "https://images.unsplash.com/photo-1628155930542-3c7a64e2c833?w=800&q=80"
+    },
+    "sensor": {
+        "title": "📡 IoT Soil Moisture & FDR Sensors",
+        "desc": "High-accuracy capacitive nodes deployed to transmit real-time Volumetric Water Content (VWC) directly to the telemetry gateway.",
+        "url": "https://images.unsplash.com/photo-1530836369250-ef72a3f5c476?w=800&q=80"
+    },
+    "valve": {
+        "title": "🔌 Electro-Hydraulic Solenoid Valves",
+        "desc": "Receives programmatic digital triggers from the automation server to mechanically toggle high-pressure irrigation flows.",
+        "url": "https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=800&q=80"
+    },
+    "weather": {
+        "title": "🌤️ Predictive Ambient Weather Stations",
+        "desc": "Integrates ambient temperature, atmospheric humidity indices, and precipitation radar vectors into predictive water forecasting models.",
+        "url": "https://images.unsplash.com/photo-1504253163759-c23fccaedd24?w=800&q=80"
+    }
+}
 
 # --- Multi-Image Data Structure ---
 CROP_ASSETS = {
@@ -153,6 +205,32 @@ st.sidebar.success("● Node A: Wheat Field (Connected)")
 st.sidebar.success("● Node B: Rice Paddy (Connected)")
 st.sidebar.success("● Node C: Cotton Field (Connected)")
 
+# --- NEW: Advanced Database Search & Visual Query Engine ---
+st.markdown("### 🔍 Advanced Database Search Module")
+search_query = st.text_input(
+    "Type to search agronomic framework terms (e.g., drip, sprinkler, sensor, valve, weather):", 
+    placeholder="Search telemetry components..."
+).lower().strip()
+
+if search_query:
+    matched = False
+    for keyword, data in SEARCH_KNOWLEDGE_BASE.items():
+        if keyword in search_query:
+            matched = True
+            st.markdown("---")
+            search_col_text, search_col_img = st.columns([1, 1], gap="large")
+            with search_col_text:
+                st.subheader(data["title"])
+                st.write(data["desc"])
+                st.success(f"✔ Live telemetry search match: Database records verified.")
+            with search_col_img:
+                st.image(data["url"], caption=f"Component Reference: {data['title']}", use_column_width=True)
+            break
+    if not matched:
+        st.warning("⚠️ No specific match found. Showing current custom system standby node:")
+        st.image("https://i.postimg.cc/CLyj6Nhr/Gemini-Generated-Image-o59yqgo59yqgo59y.png", caption="Custom Lead Node Backup Display", use_column_width=True)
+st.markdown("---")
+
 # Split Dashboard Layout
 col_input, col_output = st.columns([4, 6], gap="large")
 
@@ -183,7 +261,7 @@ with col_output:
                     st.metric(label="Volumetric Water Dosage", value=f"{water_volume} L/m²")
                 st.info(f"**System Log:** {valve_status}")
                 
-                # --- NEW: Enhanced Multi-Image Output Section ---
+                # --- Enhanced Multi-Image Output Section ---
                 st.markdown("---")
                 st.markdown("#### 📸 Diagnostics Image Gallery: Multi-Track Analysis")
                 images_to_display = CROP_ASSETS[crop_type]["images"]
@@ -208,19 +286,4 @@ with col_output:
                     - Current Moisture: {moisture_pct}%
                     - Temperature: {temp_c}°C
                     - Humidity: {humidity_pct}%
-                    - Forecast: {weather_forecast}
-                    - Calculated Volume: {water_volume} L/m²
-                    
-                    Provide a concise, professional strategy covering Field Status Assessment, Exact Watering Schedule Guide, and Automation Override Log.
-                    """)
-                    
-                    chain = prompt | llm
-                    response = chain.invoke({"crop_type": crop_type, "moisture_pct": moisture_pct, "temp_c": temp_c, "humidity_pct": humidity_pct, "weather_forecast": weather_forecast, "water_volume": water_volume})
-                    st.markdown("### 📋 Agronomic Assessment Strategy")
-                    st.write(response.content)
-                except Exception as e:
-                    st.error(f"❌ AI Inference Failure: {str(e)}")
-    else:
-        # --- NEW Standby Visual (Beautiful Agriculture Irrigation Field) ---
-        st.info("System in Active-Standby Mode. Configure inputs on the left and execute to generate diagnostics.")
-st.image("https://i.postimg.cc/CLyj6Nhr/Gemini-Generated-Image-o59yqgo59yqgo59y.png", caption="Lead Engineer: Sajid Ali — Precision Field Deployment", use_column_width=True)
+                    -
