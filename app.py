@@ -1,23 +1,20 @@
 """
 APEX-I HydroCognitive Interface
-Systems Engineering UI/UX Design Console
+Advanced AI Chatbot & Precision Irrigation Companion
 
 Lead Systems Engineer: Engineer Sajid Ali
-
-This application serves as an educational and prototyping platform for developing 
-user-friendly interfaces in precision agriculture. It integrates live GitHub API 
-querying to discover existing open-source solutions alongside interactive UI/UX prototyping tools.
 """
 
 import streamlit as st
-import requests
+from langchain_groq import ChatGroq
+from langchain_core.prompts import ChatPromptTemplate
 
 # =====================================================================
 # SYSTEM CONFIGURATION & UI STYLING
 # =====================================================================
 st.set_page_config(
-    page_title="APEX-I HydroCognitive Interface",
-    page_icon="🖥️",
+    page_title="APEX-I HydroCognitive Chatbot",
+    page_icon="💬",
     layout="wide",
     initial_sidebar_state="expanded"
 )
@@ -68,143 +65,203 @@ st.markdown("""
         box-shadow: 0 0 15px rgba(5, 178, 146, 0.2);
     }
 
-    /* Glassmorphic Cards */
-    .feature-card {
-        background: rgba(20, 30, 55, 0.65);
-        border: 1px solid rgba(5, 178, 146, 0.2);
-        border-radius: 10px;
-        padding: 20px;
-        margin-bottom: 15px;
-    }
-    
-    /* Interactive Button Customization */
-    div.stButton > button:first-child {
-        background: linear-gradient(135deg, #05B292 0%, #00F2FE 100%);
-        color: #0A0F1D;
-        border: none;
-        border-radius: 25px;
-        padding: 12px 24px;
-        width: 100%;
-        font-weight: 900;
-        font-size: 1.1rem;
-        transition: all 0.3s ease;
-    }
-    div.stButton > button:first-child:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 6px 20px rgba(0, 242, 254, 0.5);
-        color: white;
+    /* Custom styles for chat messages to fit the dark theme */
+    .stChatMessage {
+        background-color: rgba(20, 30, 55, 0.6) !important;
+        border: 1px solid rgba(5, 178, 146, 0.15) !important;
+        border-radius: 10px !important;
+        margin-bottom: 10px !important;
     }
     </style>
 """, unsafe_allow_html=True)
 
 # =====================================================================
-# GITHUB SEARCH UTILITY FUNCTION
-# =====================================================================
-def query_github_repositories(keyword):
-    """
-    Queries the GitHub API to find relevant open-source repositories 
-    based on agricultural keywords or topics.
-    """
-    url = f"https://api.github.com/search/repositories?q={keyword}&sort=stars&order=desc"
-    try:
-        response = requests.get(url, timeout=10)
-        if response.status_code == 200:
-            return response.json().get("items", [])[:5]  # Return top 5 matches
-    except Exception:
-        pass
-    return []
-
-# =====================================================================
-# MAIN HEADER WITH NEW PROFESSIONAL TITLE & ENGINEER SIGNATURE
+# MAIN HEADER WITH PROFESSIONAL TITLE & ENGINEER SIGNATURE
 # =====================================================================
 st.markdown("""
     <div class="ux-header">
         <div class="header-main-title">🌾 APEX-I HYDROCOGNITIVE INTERFACE</div>
-        <div class="system-status-sub">Advanced Interaction Prototyper & Open-Source Discovery Console</div>
+        <div class="system-status-sub">AI Conversational Companion & Smart Irrigation Control Room</div>
         <div class="engineer-badge">💻 Lead Engineer: Sajid Ali, System lead</div>
     </div>
 """, unsafe_allow_html=True)
 
 # =====================================================================
-# DUAL PANEL LAYOUT
+# SIDEBAR CONTROL DESK
 # =====================================================================
-col_left, col_right = st.columns([5, 5], gap="large")
+st.sidebar.markdown("### 🔑 Gateway Authorization")
+groq_api_key = st.sidebar.text_input("Groq Cloud API Key", type="password", placeholder="gsk_...")
 
-with col_left:
-    st.markdown("### 🔍 Live GitHub Discovery Engine")
-    st.write("Scan GitHub for real-world projects and associated technologies.")
+st.sidebar.markdown("---")
+st.sidebar.markdown("### 🏷️ Quick Topic Presets")
+st.sidebar.write("Clicking these will clear current history and start a focused topic discussion.")
+
+# Quick buttons to automatically seed chats about the 5 major topics
+if st.sidebar.button("🌱 Soil Moisture Sensing"):
+    st.session_state.messages = [
+        {"role": "assistant", "content": "Let's discuss **Soil Moisture Sensing**. I can explain how FDR/TDR capacitive sensors measure relative permittivity and volumetric water content to prevent under-watering."}
+    ]
+if st.sidebar.button("🌤️ Weather Forecast Integration"):
+    st.session_state.messages = [
+        {"role": "assistant", "content": "Let's discuss **Weather Forecast Integration**. Ask me how our system uses local predictive parameters (like impending heavy storms) to postpone irrigation cycles and save water."}
+    ]
+if st.sidebar.button("🧠 ML Optimization"):
+    st.session_state.messages = [
+        {"role": "assistant", "content": "Let's discuss **Machine Learning Optimization**. I can explain how we use regression modeling to adjust crop water dosage based on ambient humidity and temperature evaporation indexes."}
+    ]
+if st.sidebar.button("📱 Remote Monitoring & Control"):
+    st.session_state.messages = [
+        {"role": "assistant", "content": "Let's discuss **Remote Monitoring & Control**. Ask me how web dashboards act as cyber-physical twins for ESP32 and Raspberry Pi hardware gateways."}
+    ]
+if st.sidebar.button("🔌 Automation and Control Actuators"):
+    st.session_state.messages = [
+        {"role": "assistant", "content": "Let's discuss **Automation & Control Actuators**. Ask me about the mechanics of 12V solenoid flow-control valves, pump relay triggers, and automated safety overrides."}
+    ]
+
+# Clear history button
+st.sidebar.markdown("---")
+if st.sidebar.button("🗑️ Clear Chat History"):
+    st.session_state.messages = []
+
+# =====================================================================
+# CHAT LOGIC AND STATE MANAGEMENT
+# =====================================================================
+
+# Initialize session state for holding messages if empty
+if "messages" not in st.session_state or len(st.session_state.messages) == 0:
+    st.session_state.messages = [
+        {
+            "role": "assistant", 
+            "content": (
+                "Welcome to the **APEX-I HydroCognitive System Assistant**! I am your interactive control companion.\n\n"
+                "You can ask me anything about:\n"
+                "* **Soil Moisture Sensing** (FDR probes, calibration)\n"
+                "* **Weather Forecast Integration** (Predictive meteorology, storm delays)\n"
+                "* **Machine Learning Optimization** (Adaptive water scaling, regression analytics)\n"
+                "* **Remote Monitoring & Control** (ESP32/Raspberry Pi hardware twin telemetry)\n"
+                "* **Automation and Actuator Control** (Solenoid valves, mechanical overrides)\n\n"
+                "*How can I assist you with your smart irrigation network today?*"
+            )
+        }
+    ]
+
+# Display all messages in history
+for msg in st.session_state.messages:
+    with st.chat_message(msg["role"]):
+        st.markdown(msg["content"])
+
+# Accept user chat input
+user_input = st.chat_input("Type your smart irrigation query here...")
+
+if user_input:
+    # 1. Display user's message in the thread
+    with st.chat_message("user"):
+        st.markdown(user_input)
+    st.session_state.messages.append({"role": "user", "content": user_input})
     
-    # Pre-defined keyword scan buttons
-    search_keywords = ["AI irrigation system", "smart irrigation", "automated irrigation", "precision irrigation"]
-    selected_keyword = st.selectbox("Select Core Search Phrase", search_keywords)
-    
-    custom_search = st.text_input("Or write a custom keyword/topic (e.g., 'smart-irrigation'):")
-    query_term = custom_search if custom_search else selected_keyword
-    
-    if st.button("🔎 Scan GitHub Repositories"):
-        with st.spinner(f"Querying GitHub for '{query_term}'..."):
-            repos = query_github_repositories(query_term)
-            
-            if repos:
-                st.success(f"Successfully retrieved top open-source projects for '{query_term}':")
-                for repo in repos:
-                    st.markdown(f"""
-                    <div class="feature-card">
-                        <h4 style='color: #00F2FE; margin-bottom: 5px;'>🔗 <a href="{repo['html_url']}" target="_blank" style='color: #00F2FE; text-decoration: none;'>{repo['full_name']}</a></h4>
-                        <p style='font-size: 0.9rem; margin-bottom: 8px;'>{repo['description'] or 'No description provided.'}</p>
-                        <span style='background-color: #05B292; color: #0A0F1D; padding: 3px 8px; border-radius: 12px; font-size: 0.8rem; font-weight: bold;'>⭐ {repo['stargazers_count']} Stars</span>
-                        <span style='background-color: #00F2FE; color: #0A0F1D; padding: 3px 8px; border-radius: 12px; font-size: 0.8rem; font-weight: bold; margin-left: 5px;'>🍴 {repo['forks_count']} Forks</span>
-                    </div>
-                    """, unsafe_allow_html=True)
-            else:
-                st.error("No repositories found or GitHub API limit reached. Try again later.")
-
-with col_right:
-    st.markdown("### 🖥️ Interactive UX Prototyper")
-    st.write("Configure and preview user-friendly controls designed for system management.")
-    
-    # 1. Soil Moisture Sensing UI Prototype
-    with st.expander("🌱 1. Soil Moisture Sensing Interface"):
-        st.caption("How to present real-time soil moisture to a non-technical farmer:")
-        moisture_val = st.slider("Simulate Raw Sensor Reading (%)", 0, 100, 38)
-        if moisture_val < 40:
-            st.error(f"🔴 Current Status: Critical Deficit ({moisture_val}%). High contrast red alerts help users identify immediately.")
-        elif moisture_val > 80:
-            st.warning(f"🟡 Current Status: Wet Saturated ({moisture_val}%). Yellow indicators denote potential waterlogging risks.")
+    # 2. Generate and display assistant's response
+    with st.chat_message("assistant"):
+        message_placeholder = st.empty()
+        
+        # Scenario A: User has provided a valid Groq API key
+        if groq_api_key:
+            try:
+                with st.spinner("Analyzing telemetry query and drafting response..."):
+                    llm = ChatGroq(groq_api_key=groq_api_key, model_name="llama-3.1-8b-instant", temperature=0.2)
+                    
+                    # Package the chat history into a structured format
+                    history_str = ""
+                    for msg in st.session_state.messages[:-1]:  # Exclude the latest user message
+                        history_str += f"{msg['role'].capitalize()}: {msg['content']}\n"
+                        
+                    prompt = ChatPromptTemplate.from_template("""
+                    You are the APEX-I HydroCognitive Chatbot, an advanced agronomic AI assistant integrated into a Smart Irrigation Control Room.
+                    The system is designed by Lead Systems Engineer Sajid Ali.
+                    
+                    Answer the user's query professionally, drawing on systems engineering, IoT, microcontrollers, and agronomy. Keep answers concise, highly structured, and directly related to smart farming automation.
+                    
+                    Recent conversation history:
+                    {history_str}
+                    
+                    User query: {user_input}
+                    """)
+                    
+                    chain = prompt | llm
+                    response = chain.invoke({"history_str": history_str, "user_input": user_input})
+                    assistant_response = response.content
+                    message_placeholder.markdown(assistant_response)
+            except Exception as e:
+                assistant_response = f"⚠️ **AI Core Error:** I encountered an issue processing your request: `{str(e)}`. Please check your API key configuration."
+                message_placeholder.markdown(assistant_response)
+                
+        # Scenario B: No API key (Runs a smart agricultural simulator response)
         else:
-            st.success(f"🟢 Current Status: Optimal Zone ({moisture_val}%). Clean green values confirm stable operation.")
-
-    # 2. Weather Forecast Integration UI Prototype
-    with st.expander("🌤️ 2. Weather Forecast Integration"):
-        st.caption("Designing responsive UI elements based on atmospheric conditions:")
-        forecast = st.selectbox("Select Forecast Option", ["Sunny & Dry", "Heavy Storm Imminent", "Mild Overcast"])
-        if forecast == "Heavy Storm Imminent":
-            st.info("🌧️ UI Strategy: The system displays a clear recommendation to bypass next cycle to conserve resources.")
-        else:
-            st.info("☀️ UI Strategy: Display simple, bright sunshine icons to indicate upcoming default schedule execution.")
-
-    # 3. Machine Learning (ML) Optimization UI Prototype
-    with st.expander("🧠 3. Machine Learning (ML) Optimization"):
-        st.caption("Explaining complex ML predictive logic cleanly to users:")
-        enable_ml = st.checkbox("Enable Automated ML Optimization Cycles")
-        if enable_ml:
-            st.code("ML Model: Active Random Forest Regressor\nStrategy: Scaling back flow volume by 12% to compensate for high humidity.", language="text")
-        else:
-            st.text("System is operating on a standard fixed-interval rules database.")
-
-    # 4. Remote Monitoring & Control UI Prototype
-    with st.expander("📱 4. Remote Monitoring & Control"):
-        st.caption("Designing visual feedback switches that mirror physical states:")
-        mcu_status = st.selectbox("Active Device Connection", ["Online - ESP32 Gateway", "Offline - NodeMCU ESP8266"])
-        if mcu_status == "Online - ESP32 Gateway":
-            st.success("● Network Connection Latency: 42ms (Highly Responsive)")
-        else:
-            st.error("❌ Connection Dropped. Presenting manual offline diagnostic buttons.")
-
-    # 5. Automation and Control UI Prototype
-    with st.expander("🔌 5. Automation and Control Actuators"):
-        st.caption("Safe UI execution models for high-pressure hardware triggers:")
-        st.warning("Critical Hardware Actions require explicit manual confirmations to prevent pipeline damage.")
-        bypass_lock = st.toggle("Unlock Physical Override Commands")
-        if bypass_lock:
-            st.button("⚠️ Force Solenoid Valve Open")
+            with st.spinner("Processing telemetry database simulations..."):
+                query_lower = user_input.lower()
+                
+                # Intelligent keyword mapping fallback
+                if "moisture" in query_lower or "sensor" in query_lower or "soil" in query_lower:
+                    assistant_response = (
+                        "### 📡 Capacitive Soil Moisture Sensing Insight\n"
+                        "Our system utilizes **Frequency Domain Reflectometry (FDR)** sensors. "
+                        "Unlike traditional resistive sensors which corrode quickly, FDR probes measure the "
+                        "dielectric permittivity of the surrounding soil to determine its precise Volumetric Water Content (VWC).\n\n"
+                        "**Standard Configuration:**\n"
+                        "* **Calibration High (100% water):** ~450mV sensor output\n"
+                        "* **Calibration Low (Dry Air):** ~820mV sensor output\n\n"
+                        "*Note: To integrate this live with hardware, we route the sensor's analog output pin to an ADC channel on your ESP32 board.*"
+                    )
+                elif "weather" in query_lower or "forecast" in query_lower or "rain" in query_lower:
+                    assistant_response = (
+                        "### 🌤️ Weather Forecast Integration Dynamics\n"
+                        "This dashboard simulates automated integration with weather API endpoints. "
+                        "By analyzing upcoming atmospheric pressure declines and relative humidity metrics, "
+                        "the system predicts impending precipitation.\n\n"
+                        "**Automation Protocol:**\n"
+                        "If the 24-hour weather prediction forecasts **heavy rain (>70% probability)**, "
+                        "the controller initiates an **Automation Override**, locking out scheduled solenoid triggers to save resources and prevent root rot."
+                    )
+                elif "machine" in query_lower or "ml" in query_lower or "optimization" in query_lower:
+                    assistant_response = (
+                        "### 🧠 Machine Learning Evaporative Scaling\n"
+                        "We employ linear and regression analytics models to optimize water deployment schedules. "
+                        "Standard irrigation algorithms use static thresholds, which cause water waste. "
+                        "Our ML engine adjusts the target watering volume dynamically using current atmospheric data.\n\n"
+                        "**ML Rule Example:**\n"
+                        "$$\\text{Target Volume Adjustment} = V \\times (1 + \\text{Evaporation Scaling Factor})$$\n"
+                        "When ambient temperature exceeds $35^\\circ\\text{C}$ with low relative humidity, the algorithm increases flow by 15% to mitigate direct evaporation losses."
+                    )
+                elif "remote" in query_lower or "monitoring" in query_lower or "control" in query_lower:
+                    assistant_response = (
+                        "### 📱 Remote Monitoring Architecture (Cyber-Physical Twin)\n"
+                        "The interface acts as a remote dashboard. Telemetry is transmitted "
+                        "from edge devices via **MQTT (Message Queuing Telemetry Transport)** or RESTful API protocols.\n\n"
+                        "**Connection Framework:**\n"
+                        "1. **ESP32 Node** collects sensor data.\n"
+                        "2. Payload is formatted in JSON and pushed to the cloud broker.\n"
+                        "3. This Streamlit dashboard pulls and displays active sensor logs, keeping users updated in real-time."
+                    )
+                elif "actuator" in query_lower or "valve" in query_lower or "pump" in query_lower:
+                    assistant_response = (
+                        "### 🔌 Automation Actuator & Override Control\n"
+                        "The console is engineered to send digital high/low signals to electronic switches.\n\n"
+                        "**Actuator Loop Flow:**\n"
+                        "* **Trigger Condition:** Soil Moisture < Threshold (40%)\n"
+                        "* **Command Sent:** GPIO digital HIGH pin write (relay closed)\n"
+                        "* **Actuator Response:** **12V Solenoid Valve** opens, allowing hydraulic flow.\n\n"
+                        "The system also features physical bypass toggles on the sidebar so operators can force valves open/closed instantly during maintenance."
+                    )
+                else:
+                    # Generic response guiding the user to topics
+                    assistant_response = (
+                        "I am ready to discuss any aspects of our precision irrigation framework! "
+                        "Please ask me a question about **Soil Moisture Probes**, **Weather API Delays**, **ML Water Scaling**, "
+                        "**Remote Web Interfaces**, or **Solenoid Relay Valves**.\n\n"
+                        "*(To unlock the fully conversational, custom AI assistant, simply enter your Groq Cloud API key in the sidebar dashboard!)*"
+                    )
+                    
+                # Display response
+                message_placeholder.markdown(assistant_response)
+                
+        # Save the assistant response to chat history
+        st.session_state.messages.append({"role": "assistant", "content": assistant_response})
