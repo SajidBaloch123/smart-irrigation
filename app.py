@@ -1,27 +1,26 @@
 """
-Smart Irrigation Control Console
-Systems Engineering Framework
+Smart Irrigation Interface Prototyper & GitHub Discovery Engine
+Systems Engineering UI/UX Design Console
 
-This module implements a core software gateway for an intelligent, rule-based
-Decision Support System (DSS). It features a mathematical computation engine 
-for water volume requirements alongside an LLM cognitive reasoning tracker.
+This application serves as an educational and prototyping platform for developing 
+user-friendly interfaces in precision agriculture. It integrates live GitHub API 
+querying to discover existing open-source solutions alongside interactive UI/UX prototyping tools.
 """
 
 import streamlit as st
-from langchain_groq import ChatGroq
-from langchain_core.prompts import ChatPromptTemplate
+import requests
 
 # =====================================================================
-# PAGE CONFIGURATION & SCADA UI STYLING
+# SYSTEM CONFIGURATION & UI STYLING
 # =====================================================================
 st.set_page_config(
-    page_title="Smart Irrigation System",
-    page_icon="🌾",
+    page_title="Irrigation UX & Discovery Console",
+    page_icon="🖥️",
     layout="wide",
     initial_sidebar_state="expanded"
 )
 
-# Premium Dark Mode SCADA UI Styling
+# Premium Obsidian Slate UI styling
 st.markdown("""
     <style>
     .stApp {
@@ -30,37 +29,39 @@ st.markdown("""
     }
     .block-container { padding-top: 1.5rem; }
     
-    /* System Control Header Panel */
-    .scada-header {
-        background: linear-gradient(135deg, rgba(16, 24, 48, 0.95) 0%, rgba(24, 43, 73, 0.95) 100%);
+    /* Premium Title Card */
+    .ux-header {
+        background: linear-gradient(135deg, rgba(20, 35, 60, 0.95) 0%, rgba(10, 20, 40, 0.95) 100%);
         border-radius: 12px;
-        padding: 20px;
+        padding: 25px;
         border: 1px solid rgba(0, 242, 254, 0.3);
         text-align: center;
         margin-bottom: 25px;
+        box-shadow: 0 8px 32px 0 rgba(0, 242, 254, 0.15);
     }
     .header-main-title {
         color: #00F2FE;
-        font-size: 2.4rem;
+        font-size: 2.3rem;
         font-weight: 900;
         letter-spacing: 1px;
     }
     .system-status-sub {
         color: #05B292;
-        font-size: 0.95rem;
+        font-size: 1rem;
         font-weight: 700;
         margin-top: 5px;
     }
 
-    /* KPI Metric Displays */
-    div[data-testid="stMetric"] {
+    /* Glassmorphic Cards */
+    .feature-card {
         background: rgba(20, 30, 55, 0.65);
-        border: 1px solid rgba(0, 242, 254, 0.2);
+        border: 1px solid rgba(5, 178, 146, 0.2);
         border-radius: 10px;
-        padding: 12px;
+        padding: 20px;
+        margin-bottom: 15px;
     }
     
-    /* Interactive Process Controls Button */
+    /* Interactive Button Customization */
     div.stButton > button:first-child {
         background: linear-gradient(135deg, #05B292 0%, #00F2FE 100%);
         color: #0A0F1D;
@@ -81,131 +82,112 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # =====================================================================
-# CORE CONFIGURATION SCHEMAS
+# GITHUB SEARCH UTILITY FUNCTION
 # =====================================================================
-CROP_METRICS = {
-    "Crop_Type_A": {"depth_mm": 50, "moisture_range": [45, 70]},
-    "Crop_Type_B": {"depth_mm": 100, "moisture_range": [70, 95]},
-    "Crop_Type_C": {"depth_mm": 65, "moisture_range": [50, 75]}
-}
+def query_github_repositories(keyword):
+    """
+    Queries the GitHub API to find relevant open-source repositories 
+    based on agricultural keywords or topics.
+    """
+    url = f"https://api.github.com/search/repositories?q={keyword}&sort=stars&order=desc"
+    try:
+        response = requests.get(url, timeout=10)
+        if response.status_code == 200:
+            return response.json().get("items", [])[:5]  # Return top 5 matches
+    except Exception:
+        pass
+    return []
 
 # =====================================================================
-# MATHEMATICAL DETERMINISTIC RULES ENGINE
-# =====================================================================
-def calculate_hydraulic_dosage(crop_type, current_moisture, temperature):
-    """
-    Computes volumetric water distribution requirements based on current deficit profiles.
-    """
-    config = CROP_METRICS.get(crop_type, CROP_METRICS["Crop_Type_A"])
-    target = config["moisture_range"]
-    depth = config["depth_mm"]
-    
-    if current_moisture < target[0]:
-        status_log = "CRITICAL HYDRAULIC DEFICIT: Automated valve loop open triggered."
-        moisture_deficit_pct = target[1] - current_moisture
-        # Volumetric Math Model: Deficit Ratio * Plant Root Zone Depth
-        water_volume_liters_m2 = (moisture_deficit_pct / 100.0) * depth
-    elif current_moisture > target[1]:
-        status_log = "CRITICAL SATURATION WARNING: Solenoid override locked out."
-        moisture_deficit_pct = 0
-        water_required_liters_m2 = 0
-        water_volume_liters_m2 = 0
-    else:
-        status_log = "EQUILIBRIUM MAINTAINED: System operating in baseline criteria."
-        moisture_deficit_pct = 0
-        water_volume_liters_m2 = 0
-        
-    # Microclimate Environmental Factor Scaling
-    if temperature > 35 and water_volume_liters_m2 > 0:
-        water_volume_liters_m2 *= 1.15
-        
-    return status_log, round(moisture_deficit_pct, 1), round(water_volume_liters_m2, 2)
-
-# =====================================================================
-# INTERFACE CONTROL ROOM
+# MAIN HEADER
 # =====================================================================
 st.markdown("""
-    <div class="scada-header">
-        <div class="header-main-title">🚜 SMART IRRIGATION INTERFACE</div>
-        <div class="system-status-sub">Distributed SCADA Environment Console — Telemetry Pipeline Active</div>
+    <div class="ux-header">
+        <div class="header-main-title">🌾 IRRIGATION UX & DISCOVERY CONSOLE</div>
+        <div class="system-status-sub">Interactivity Prototyper & GitHub Repository Scanner</div>
     </div>
 """, unsafe_allow_html=True)
 
-# Sidebar System Configuration Layout
-st.sidebar.markdown("### 🔑 Gateway Authorization")
-groq_api_key = st.sidebar.text_input("Groq API Cloud Key", type="password", placeholder="gsk_...")
+# =====================================================================
+# DUAL PANEL LAYOUT
+# =====================================================================
+col_left, col_right = st.columns([5, 5], gap="large")
 
-st.sidebar.markdown("---")
-st.sidebar.markdown("### 🔌 Actuator Diagnostics")
-solenoid_relay = st.sidebar.checkbox("Manual Valve Bypass", value=False)
-pump_relay = st.sidebar.checkbox("Manual Pump Bypass", value=False)
-
-# Main Dashboard Processing Matrix Split
-col_controls, col_diagnostics = st.columns([4, 6], gap="large")
-
-with col_controls:
-    st.markdown("### 📡 Live Sensor Telemetry Array")
-    selected_crop = st.selectbox("Target Cultivation Profile", list(CROP_METRICS.keys()))
-    live_moisture = st.slider("Soil Volumetric Moisture Content (%)", 10, 100, 35)
-    live_temp = st.slider("Ambient Environmental Temperature (°C)", 10, 50, 38)
-    live_humidity = st.slider("Relative Atmospheric Humidity (%)", 10, 100, 45)
-    weather_forecast = st.radio("Predictive Forecast Vectors", ["Clear / Optimal", "Overcast Sky", "Imminent Rainfall"])
+with col_left:
+    st.markdown("### 🔍 Live GitHub Discovery Engine")
+    st.write("Scan GitHub for real-world projects and associated technologies.")
     
-    compute_matrix_btn = st.button("🚀 Process Telemetry & Initialize AI Analytics")
-
-with col_diagnostics:
-    st.markdown("### 📋 Automation Diagnostics Panel")
+    # Pre-defined keyword scan buttons
+    search_keywords = ["AI irrigation system", "smart irrigation", "automated irrigation", "precision irrigation"]
+    selected_keyword = st.selectbox("Select Core Search Phrase", search_keywords)
     
-    if compute_matrix_btn:
-        if not groq_api_key:
-            st.warning("⚠️ Configuration Alert: Valid API verification key required for AI analytical tasks.")
+    custom_search = st.text_input("Or write a custom keyword/topic (e.g., 'smart-irrigation'):")
+    query_term = custom_search if custom_search else selected_keyword
+    
+    if st.button("🔎 Scan GitHub Repositories"):
+        with st.spinner(f"Querying GitHub for '{query_term}'..."):
+            repos = query_github_repositories(query_term)
+            
+            if repos:
+                st.success(f"Successfully retrieved top open-source projects for '{query_term}':")
+                for repo in repos:
+                    st.markdown(f"""
+                    <div class="feature-card">
+                        <h4 style='color: #00F2FE; margin-bottom: 5px;'>🔗 <a href="{repo['html_url']}" target="_blank" style='color: #00F2FE; text-decoration: none;'>{repo['full_name']}</a></h4>
+                        <p style='font-size: 0.9rem; margin-bottom: 8px;'>{repo['description'] or 'No description provided.'}</p>
+                        <span style='background-color: #05B292; color: #0A0F1D; padding: 3px 8px; border-radius: 12px; font-size: 0.8rem; font-weight: bold;'>⭐ {repo['stargazers_count']} Stars</span>
+                        <span style='background-color: #00F2FE; color: #0A0F1D; padding: 3px 8px; border-radius: 12px; font-size: 0.8rem; font-weight: bold; margin-left: 5px;'>🍴 {repo['forks_count']} Forks</span>
+                    </div>
+                    """, unsafe_allow_html=True)
+            else:
+                st.error("No repositories found or GitHub API limit reached. Try again later.")
+
+with col_right:
+    st.markdown("### 🖥️ Interactive UX Prototyper")
+    st.write("Configure and preview user-friendly controls designed for system management.")
+    
+    # 1. Soil Moisture Sensing UI Prototype
+    with st.expander("🌱 1. Soil Moisture Sensing Interface"):
+        st.caption("How to present real-time soil moisture to a non-technical farmer:")
+        moisture_val = st.slider("Simulate Raw Sensor Reading (%)", 0, 100, 38)
+        if moisture_val < 40:
+            st.error(f"🔴 Current Status: Critical Deficit ({moisture_val}%). High contrast red alerts help users identify immediately.")
+        elif moisture_val > 80:
+            st.warning(f"🟡 Current Status: Wet Saturated ({moisture_val}%). Yellow indicators denote potential waterlogging risks.")
         else:
-            with st.spinner("Processing local rule metrics and spawning AI tracks..."):
-                # Run rule calculations
-                valve_log, deficit, total_volume = calculate_hydraulic_dosage(selected_crop, live_moisture, live_temp)
-                
-                # Render System Math Variables
-                st.markdown("#### 📐 Engineering Mathematics Model")
-                st.latex(r"V = \frac{\Delta M}{100} \times d")
-                st.caption("Standard system formula tracking Volumetric Water Dosage ($V$), Moisture Deficit ($\Delta M$), and Depth ($d$).")
-                
-                # Print Analytical Metric Blocks
-                metric_col1, metric_col2 = st.columns(2)
-                with metric_col1:
-                    st.metric(label="Calculated Moisture Deficit (ΔM)", value=f"{deficit}%")
-                with metric_col2:
-                    st.metric(label="Hydraulic Water Volume Output (V)", value=f"{total_volume} L/m²")
-                    
-                st.info(f"⚙️ **System Log:** {valve_log}")
-                
-                # Execute Cloud LLM Strategy Tracking Pipeline
-                try:
-                    llm = ChatGroq(groq_api_key=groq_api_key, model_name="llama-3.1-8b-instant", temperature=0.1)
-                    prompt = ChatPromptTemplate.from_template("""
-                    You are an advanced AI Smart Irrigation Controller.
-                    Analyze the following real-time field telemetry metrics to output an operational strategy.
-                    - Crop Zone: {selected_crop}
-                    - Moisture Content: {live_moisture}%
-                    - Temp: {live_temp}°C
-                    - Humidity: {live_humidity}%
-                    - Forecast Outlook: {weather_forecast}
-                    - Calculated Flow: {total_volume} L/m²
-                    
-                    Provide a concise, technical deployment strategy highlighting Hardware Diagnostics, Valve Timing Windows, and System Safety Overrides.
-                    """)
-                    
-                    chain = prompt | llm
-                    response = chain.invoke({
-                        "selected_crop": selected_crop,
-                        "live_moisture": live_moisture,
-                        "live_temp": live_temp,
-                        "live_humidity": live_humidity,
-                        "weather_forecast": weather_forecast,
-                        "total_volume": total_volume
-                    })
-                    st.markdown("### 📋 AI Cognitive Strategy Report")
-                    st.write(response.content)
-                except Exception as e:
-                    st.error(f"❌ AI Computing Error encountered: {str(e)}")
-    else:
-        st.info("System Standby Track: Awaiting live sensor telemetry data vectors. Configure parameters on the left to activate.")
+            st.success(f"🟢 Current Status: Optimal Zone ({moisture_val}%). Clean green values confirm stable operation.")
+
+    # 2. Weather Forecast Integration UI Prototype
+    with st.expander("🌤️ 2. Weather Forecast Integration"):
+        st.caption("Designing responsive UI elements based on atmospheric conditions:")
+        forecast = st.selectbox("Select Forecast Option", ["Sunny & Dry", "Heavy Storm Imminent", "Mild Overcast"])
+        if forecast == "Heavy Storm Imminent":
+            st.info("🌧️ UI Strategy: The system displays a clear recommendation to bypass next cycle to conserve resources.")
+        else:
+            st.info("☀️ UI Strategy: Display simple, bright sunshine icons to indicate upcoming default schedule execution.")
+
+    # 3. Machine Learning (ML) Optimization UI Prototype
+    with st.expander("🧠 3. Machine Learning (ML) Optimization"):
+        st.caption("Explaining complex ML predictive logic cleanly to users:")
+        enable_ml = st.checkbox("Enable Automated ML Optimization Cycles")
+        if enable_ml:
+            st.code("ML Model: Active Random Forest Regressor\nStrategy: Scaling back flow volume by 12% to compensate for high humidity.", language="text")
+        else:
+            st.text("System is operating on a standard fixed-interval rules database.")
+
+    # 4. Remote Monitoring & Control UI Prototype
+    with st.expander("📱 4. Remote Monitoring & Control"):
+        st.caption("Designing visual feedback switches that mirror physical states:")
+        mcu_status = st.selectbox("Active Device Connection", ["Online - ESP32 Gateway", "Offline - NodeMCU ESP8266"])
+        if mcu_status == "Online - ESP32 Gateway":
+            st.success("● Network Connection Latency: 42ms (Highly Responsive)")
+        else:
+            st.error("❌ Connection Dropped. Presenting manual offline diagnostic buttons.")
+
+    # 5. Automation and Control UI Prototype
+    with st.expander("🔌 5. Automation and Control Actuators"):
+        st.caption("Safe UI execution models for high-pressure hardware triggers:")
+        st.warning("Critical Hardware Actions require explicit manual confirmations to prevent pipeline damage.")
+        bypass_lock = st.toggle("Unlock Physical Override Commands")
+        if bypass_lock:
+            st.button("⚠️ Force Solenoid Valve Open")
