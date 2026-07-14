@@ -72,6 +72,23 @@ st.markdown("""
         border-radius: 10px !important;
         margin-bottom: 10px !important;
     }
+
+    /* FORCE INPUT FIELDS TO HAVE BLACK TEXT ON WHITE BACKGROUNDS */
+    div[data-testid="stTextInput"] input {
+        color: #000000 !important;
+        background-color: #FFFFFF !important;
+    }
+    div[data-testid="stChatInput"] textarea {
+        color: #000000 !important;
+        background-color: #FFFFFF !important;
+    }
+    /* Style placeholder text for input fields */
+    div[data-testid="stTextInput"] input::placeholder {
+        color: #555555 !important;
+    }
+    div[data-testid="stChatInput"] textarea::placeholder {
+        color: #555555 !important;
+    }
     </style>
 """, unsafe_allow_html=True)
 
