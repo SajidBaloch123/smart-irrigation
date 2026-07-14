@@ -1,6 +1,6 @@
 """
-APEX HYDRO-AI
-Catchy & Simple AI Irrigation Companion
+APEX-I HydroCognitive Interface
+Advanced AI Chatbot & Precision Irrigation Companion
 
 Lead Systems Engineer: Engineer Sajid Ali
 """
@@ -13,7 +13,7 @@ from langchain_core.prompts import ChatPromptTemplate
 # SYSTEM CONFIGURATION & UI STYLING
 # =====================================================================
 st.set_page_config(
-    page_title="APEX HYDRO-AI",
+    page_title="APEX-I HydroCognitive Chatbot",
     page_icon="💬",
     layout="wide",
     initial_sidebar_state="expanded"
@@ -24,11 +24,11 @@ st.markdown("""
     <style>
     .stApp {
         background-color: #0A0F1D;
-        color: #FFFFFF;
+        color: #E2E8F0;
     }
     .block-container { padding-top: 1.5rem; }
     
-    /* Premium Catchy Title Card */
+    /* Premium Title Card */
     .ux-header {
         background: linear-gradient(135deg, rgba(20, 35, 60, 0.95) 0%, rgba(10, 20, 40, 0.95) 100%);
         border-radius: 12px;
@@ -40,7 +40,7 @@ st.markdown("""
     }
     .header-main-title {
         color: #00F2FE;
-        font-size: 2.5rem;
+        font-size: 2.3rem;
         font-weight: 900;
         letter-spacing: 2px;
         text-shadow: 0 0 15px rgba(0,242,254,0.4);
@@ -73,19 +73,7 @@ st.markdown("""
         margin-bottom: 10px !important;
     }
 
-    /* FORCE ALL RESULT WORDING & CHAT TEXT TO BE WHITE (INSTEAD OF SILVER) */
-    .stChatMessage p, 
-    .stChatMessage li, 
-    .stChatMessage h1, 
-    .stChatMessage h2, 
-    .stChatMessage h3, 
-    .stChatMessage h4, 
-    .stChatMessage code,
-    .stChatMessage span {
-        color: #FFFFFF !important;
-    }
-
-    /* Force input fields to have black text on white backgrounds */
+    /* FORCE INPUT FIELDS TO HAVE BLACK TEXT ON WHITE BACKGROUNDS */
     div[data-testid="stTextInput"] input {
         color: #000000 !important;
         background-color: #FFFFFF !important;
@@ -105,12 +93,12 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # =====================================================================
-# MAIN HEADER WITH NEW PROFESSIONAL TITLE & ENGINEER SIGNATURE
+# MAIN HEADER WITH PROFESSIONAL TITLE & ENGINEER SIGNATURE
 # =====================================================================
 st.markdown("""
     <div class="ux-header">
-        <div class="header-main-title">🌾 APEX HYDRO-AI</div>
-        <div class="system-status-sub">Smart Irrigation Conversational Assistant & Interface Prototyper</div>
+        <div class="header-main-title">🌾 APEX-I HYDROCOGNITIVE INTERFACE</div>
+        <div class="system-status-sub">AI Conversational Companion & Smart Irrigation Control Room</div>
         <div class="engineer-badge">💻 Lead Engineer: Sajid Ali, System lead</div>
     </div>
 """, unsafe_allow_html=True)
@@ -156,42 +144,28 @@ if st.sidebar.button("🗑️ Clear Chat History"):
 # CHAT LOGIC AND STATE MANAGEMENT
 # =====================================================================
 
-# Welcome card featuring centered keywords
-welcome_html = """
-<div style="text-align: center; padding: 20px;">
-    <h3 style="color: #00F2FE; margin-bottom: 10px;">Welcome to the APEX HYDRO-AI Dashboard</h3>
-    <p style="color: #FFFFFF; font-size: 1.05rem; margin-bottom: 20px;">
-        Interactive Systems Engineering Control Room & Conversational Companion.
-    </p>
-    <div style="background: rgba(5, 178, 146, 0.1); border: 1px solid rgba(5, 178, 146, 0.3); border-radius: 10px; display: inline-block; padding: 20px 40px;">
-        <p style="color: #05B292; font-weight: bold; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px;">
-            Core Telemetry Framework Topics:
-        </p>
-        <p style="color: #FFFFFF; margin: 5px 0; font-size: 1.1rem; font-weight: bold;">🌱 Soil Moisture Sensing</p>
-        <p style="color: #FFFFFF; margin: 5px 0; font-size: 1.1rem; font-weight: bold;">🌤️ Weather Forecasting</p>
-        <p style="color: #FFFFFF; margin: 5px 0; font-size: 1.1rem; font-weight: bold;">🧠 Machine Learning Optimization</p>
-        <p style="color: #FFFFFF; margin: 5px 0; font-size: 1.1rem; font-weight: bold;">📱 Remote Monitoring & Control</p>
-        <p style="color: #FFFFFF; margin: 5px 0; font-size: 1.1rem; font-weight: bold;">🔌 Automation and Control Actuators</p>
-    </div>
-    <p style="color: #888888; font-size: 0.9rem; margin-top: 20px;">
-        Type a question below or choose a preset in the sidebar control panel to begin.
-    </p>
-</div>
-"""
-
 # Initialize session state for holding messages if empty
 if "messages" not in st.session_state or len(st.session_state.messages) == 0:
     st.session_state.messages = [
         {
             "role": "assistant", 
-            "content": welcome_html
+            "content": (
+                "Welcome to the **APEX-I HydroCognitive System Assistant**! I am your interactive control companion.\n\n"
+                "You can ask me anything about:\n"
+                "* **Soil Moisture Sensing** (FDR probes, calibration)\n"
+                "* **Weather Forecast Integration** (Predictive meteorology, storm delays)\n"
+                "* **Machine Learning Optimization** (Adaptive water scaling, regression analytics)\n"
+                "* **Remote Monitoring & Control** (ESP32/Raspberry Pi hardware twin telemetry)\n"
+                "* **Automation and Actuator Control** (Solenoid valves, mechanical overrides)\n\n"
+                "*How can I assist you with your smart irrigation network today?*"
+            )
         }
     ]
 
 # Display all messages in history
 for msg in st.session_state.messages:
     with st.chat_message(msg["role"]):
-        st.markdown(msg["content"], unsafe_allow_html=True)
+        st.markdown(msg["content"])
 
 # Accept user chat input
 user_input = st.chat_input("Type your smart irrigation query here...")
@@ -218,7 +192,7 @@ if user_input:
                         history_str += f"{msg['role'].capitalize()}: {msg['content']}\n"
                         
                     prompt = ChatPromptTemplate.from_template("""
-                    You are the APEX HYDRO-AI Chatbot, an advanced agronomic AI assistant integrated into a Smart Irrigation Control Room.
+                    You are the APEX-I HydroCognitive Chatbot, an advanced agronomic AI assistant integrated into a Smart Irrigation Control Room.
                     The system is designed by Lead Systems Engineer Sajid Ali.
                     
                     Answer the user's query professionally, drawing on systems engineering, IoT, microcontrollers, and agronomy. Keep answers concise, highly structured, and directly related to smart farming automation.
@@ -252,7 +226,7 @@ if user_input:
                         "**Standard Configuration:**\n"
                         "* **Calibration High (100% water):** ~450mV sensor output\n"
                         "* **Calibration Low (Dry Air):** ~820mV sensor output\n\n"
-                        "To integrate this live with hardware, we route the sensor's analog output pin to an ADC channel on your ESP32 board."
+                        "*Note: To integrate this live with hardware, we route the sensor's analog output pin to an ADC channel on your ESP32 board.*"
                     )
                 elif "weather" in query_lower or "forecast" in query_lower or "rain" in query_lower:
                     assistant_response = (
@@ -271,8 +245,8 @@ if user_input:
                         "Standard irrigation algorithms use static thresholds, which cause water waste. "
                         "Our ML engine adjusts the target watering volume dynamically using current atmospheric data.\n\n"
                         "**ML Rule Example:**\n"
-                        "Target Volume Adjustment = V * (1 + Evaporation Scaling Factor)\n"
-                        "When ambient temperature exceeds 35°C with low relative humidity, the algorithm increases flow by 15% to mitigate direct evaporation losses."
+                        "$$\\text{Target Volume Adjustment} = V \\times (1 + \\text{Evaporation Scaling Factor})$$\n"
+                        "When ambient temperature exceeds $35^\\circ\\text{C}$ with low relative humidity, the algorithm increases flow by 15% to mitigate direct evaporation losses."
                     )
                 elif "remote" in query_lower or "monitoring" in query_lower or "control" in query_lower:
                     assistant_response = (
