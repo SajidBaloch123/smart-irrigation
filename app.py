@@ -1,8 +1,20 @@
+"""
+APEX-I Smart Irrigation Console
+Lead Systems Engineer: Sajid Ali, Computer Systems Engineering (CSE)
+
+This module implements the software gateway for an intelligent, AI-driven 
+Decision Support System (DSS) designed for precision agriculture. It combines 
+an empirical Mathematical Rules Engine for hydraulic dosage calculation with a 
+Cognitive AI Reasoning Layer (using Llama-3) for predictive microclimate adaptation.
+"""
+
 import streamlit as st
 from langchain_groq import ChatGroq
 from langchain_core.prompts import ChatPromptTemplate
 
-# Set up page layout style (Advanced Industrial View)
+# =====================================================================
+# SYSTEM CONFIGURATION & UI STYLING
+# =====================================================================
 st.set_page_config(
     page_title="APEX-I Smart Irrigation Console",
     page_icon="⚡",
@@ -10,18 +22,17 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# --- Premium Glassmorphism & Cyberpunk Neon UI Customization ---
+# Custom css styling representing a high-tech industrial SCADA system
 st.markdown("""
     <style>
-    /* Deep Space Background */
     .stApp {
         background-color: #0A0F1D;
         color: #E2E8F0;
     }
     .block-container { padding-top: 1.5rem; }
     
-    /* Neon Lead Engineer Header Card */
-    .lead-engineer-card {
+    /* SCADA Style Header Card */
+    .scada-header {
         background: linear-gradient(135deg, rgba(16, 24, 48, 0.95) 0%, rgba(24, 43, 73, 0.95) 100%);
         border-radius: 16px;
         padding: 24px;
@@ -40,7 +51,7 @@ st.markdown("""
         letter-spacing: 2px;
         text-shadow: 0 0 15px rgba(0,242,254,0.4);
     }
-    .lead-credentials {
+    .engineer-badge {
         color: white;
         background: linear-gradient(135deg, #05B292 0%, #00F2FE 100%);
         padding: 8px 18px;
@@ -50,16 +61,13 @@ st.markdown("""
         box-shadow: 0 4px 15px rgba(5, 178, 146, 0.3);
         border: 1px solid rgba(255,255,255,0.2);
     }
-    .hw-gateways {
+    .hw-status {
         color: #05B292;
         font-size: 0.95rem;
         font-weight: 700;
-        letter-spacing: 1px;
-        margin-top: 5px;
-        text-align: left;
     }
 
-    /* Glass Panels for Inputs and Displays */
+    /* Embedded Glass Panels */
     div[data-testid="stMetric"] {
         background: rgba(20, 30, 55, 0.6);
         border: 1px solid rgba(0, 242, 254, 0.15);
@@ -68,7 +76,7 @@ st.markdown("""
         box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
     }
     
-    /* Glowing Action Buttons with Pulse effect */
+    /* Styled Control Buttons */
     div.stButton > button:first-child {
         background: linear-gradient(135deg, #05B292 0%, #00F2FE 100%);
         color: #0A0F1D;
@@ -78,7 +86,6 @@ st.markdown("""
         width: 100%;
         font-weight: 900;
         font-size: 1.2rem;
-        letter-spacing: 1px;
         transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
         box-shadow: 0 4px 15px rgba(5, 178, 146, 0.4);
     }
@@ -90,7 +97,9 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# --- Advanced Visual Knowledge Base (Dynamic Search Engine) ---
+# =====================================================================
+# SYSTEM DATABASES (KNOWLEDGE & CROPS)
+# =====================================================================
 SEARCH_KNOWLEDGE_BASE = {
     "drip": {
         "title": "💧 Micro-Drip Irrigation Systems",
@@ -119,7 +128,6 @@ SEARCH_KNOWLEDGE_BASE = {
     }
 }
 
-# --- Multi-Image Data Structure ---
 CROP_ASSETS = {
     "Wheat": {
         "depth_mm": 50,
@@ -159,60 +167,72 @@ CROP_ASSETS = {
     }
 }
 
-# --- Mathematical Rules Engine ---
+# =====================================================================
+# MATHEMATICAL RULES ENGINE
+# =====================================================================
 def calculate_irrigation_needs(crop_type, current_moisture, temperature, humidity):
+    """
+    Computes volumetric water requirement based on soil deficit and crop depth profile.
+    
+    Parameters:
+        crop_type (str): Key of target crop configuration
+        current_moisture (int): Volumetric water content (%) measured by FDR sensors
+        temperature (int): Ambient microclimate temperature in °C
+        humidity (int): Atmospheric relative humidity (%)
+        
+    Returns:
+        tuple: (status_message, moisture_deficit_pct, water_volume_liters_m2)
+    """
     asset_data = CROP_ASSETS.get(crop_type, CROP_ASSETS["Wheat"])
     target = asset_data["moisture_range"]
     depth = asset_data["depth_mm"]
     
+    # 1. Evaluate Moisture Deficit
     if current_moisture < target[0]:
-        status = "CRITICAL UNDER-WATERING: Automatic Valve Trigger Activated"
+        status = "CRITICAL UNDER-WATERING: Automatic Solenoid Valve Triggered."
         moisture_deficit_pct = target[1] - current_moisture
+        # Empirical Volumetric Formula: Deficit (%) * Soil Zone Depth (mm)
         water_required_liters_m2 = (moisture_deficit_pct / 100.0) * depth
     elif current_moisture > target[1]:
-        status = "ALERT: FIELD SATURATED / WATERLOGGING RISK"
+        status = "ALERT: FIELD SATURATED / WATERLOGGING RISK. Valves Locked."
         moisture_deficit_pct = 0
         water_required_liters_m2 = 0
     else:
-        status = "OPTIMAL STABILITY: Irrigation Cycles Postponed"
+        status = "OPTIMAL STABILITY: Irrigation Cycles Postponed."
         moisture_deficit_pct = 0
         water_required_liters_m2 = 0
         
+    # 2. Apply Microclimate Evaporation Compensation Factor (+15% flow multiplier)
     if temperature > 35 and water_required_liters_m2 > 0:
         water_required_liters_m2 *= 1.15
         
     return status, round(moisture_deficit_pct, 1), round(water_required_liters_m2, 2)
 
-# --- 1. Top Section: Lead Engineer Branding Card ---
+# =====================================================================
+# USER INTERFACE RENDERING
+# =====================================================================
+
+# 1. Lead Engineer Header Block
 st.markdown("""
-    <div class="lead-engineer-card">
+    <div class="scada-header">
         <div>
             <div class="header-main-title">🌾 SMART IRRIGATION INTERFACE</div>
-            <div class="hw-gateways">🖥️ Hardware Gateways: Connected (4 Active Nodes)</div>
+            <div class="hw-status">🖥️ Core Hardware Gateways: Connected & Processing</div>
         </div>
         <div>
-            <div class="lead-credentials">💻 Lead Engineer: Sajid Ali, System lead</div>
+            <div class="engineer-badge">💻 Lead Engineer: Sajid Ali, System lead</div>
         </div>
     </div>
 """, unsafe_allow_html=True)
 
-# Sidebar Setup (Credentials)
-st.sidebar.markdown("### 🔑 System Authorization")
-groq_api_key = st.sidebar.text_input("Groq API Key", type="password", placeholder="gsk_...")
-st.sidebar.markdown("---")
-st.sidebar.markdown("### 📡 Hardware Telemetry")
-st.sidebar.success("● Node A: Wheat Field (Connected)")
-st.sidebar.success("● Node B: Rice Paddy (Connected)")
-st.sidebar.success("● Node C: Cotton Field (Connected)")
-
-# --- NEW: Advanced Database Search & Visual Query Engine ---
+# 2. Interactive Search Module
 st.markdown("### 🔍 Advanced Database Search Module")
 search_query = st.text_input(
-    "Type to search agronomic framework terms (e.g., drip, sprinkler, sensor, valve, weather):", 
-    placeholder="Search telemetry components..."
+    "Query the localized telemetry components database (e.g., drip, sprinkler, sensor, valve, weather):", 
+    placeholder="Enter keyword..."
 ).lower().strip()
 
-if search_query:
+if len(search_query) > 0:
     matched = False
     for keyword, data in SEARCH_KNOWLEDGE_BASE.items():
         if keyword in search_query:
@@ -222,61 +242,68 @@ if search_query:
             with search_col_text:
                 st.subheader(data["title"])
                 st.write(data["desc"])
-                st.success(f"✔ Live telemetry search match: Database records verified.")
+                st.success("✔ Database query successful. Hardware specifications matching:")
             with search_col_img:
-                st.image(data["url"], caption=f"Component Reference: {data['title']}", use_column_width=True)
+                st.image(data["url"], caption=f"Component Specifications Reference Frame", use_column_width=True)
             break
+            
     if not matched:
-        st.warning("⚠️ No specific match found. Showing current custom system standby node:")
-        st.image("https://i.postimg.cc/CLyj6Nhr/Gemini-Generated-Image-o59yqgo59yqgo59y.png", caption="Custom Lead Node Backup Display", use_column_width=True)
+        st.warning(f"⚠️ No specific system match found for '{search_query}'.")
+
 st.markdown("---")
 
-# Split Dashboard Layout
+# 3. Dual Control Layout
 col_input, col_output = st.columns([4, 6], gap="large")
 
 with col_input:
-    st.markdown("### 📊 Live Telemetry Inputs")
-    crop_type = st.selectbox("Target Crop Asset", list(CROP_ASSETS.keys()))
-    moisture_pct = st.slider("Soil Moisture Content (%)", 10, 100, 35)
-    temp_c = st.slider("Field Ambient Temperature (°C)", 10, 50, 38)
-    humidity_pct = st.slider("Atmospheric Humidity Ratio (%)", 10, 100, 40)
-    weather_forecast = st.radio("Weather Outlook (24H)", ["Sunny / Clear", "Overcast", "Heavy Rain", "Scattered Showers"])
-    execute_btn = st.button("🚀 Evaluate & Compute System Logic")
+    st.markdown("### 📊 Active Telemetry Feeds")
+    crop_type = st.selectbox("Target Crop Profile", list(CROP_ASSETS.keys()))
+    moisture_pct = st.slider("Capacitive Sensor Volumetric Soil Moisture (%)", 10, 100, 35)
+    temp_c = st.slider("External Ambient Temperature Reading (°C)", 10, 50, 38)
+    humidity_pct = st.slider("Relative Atmospheric Humidity (%)", 10, 100, 40)
+    weather_forecast = st.radio("Predictive Microclimate Outlook (24H)", ["Sunny / Clear", "Overcast", "Heavy Rain", "Scattered Showers"])
+    execute_btn = st.button("🚀 Process Sensor Matrix & Activate AI")
 
 with col_output:
-    st.markdown("### 📋 Evaluation Output & Diagnostics")
+    st.markdown("### 📋 System Evaluation Outputs & Analytics")
     
     if execute_btn:
         if not groq_api_key:
-            st.warning("⚠️ Setup Error: Groq API Key required for AI analysis module.")
+            st.warning("⚠️ Configuration Error: Please input your Groq API Key on the sidebar desk.")
         else:
-            with st.spinner("Analyzing telemetry profiles and rendering diagnostics grid..."):
-                valve_status, deficit_pct, water_volume = calculate_irrigation_needs(crop_type, moisture_pct, temp_c, humidity_pct)
+            with st.spinner("Executing Mathematical Rules Engine & LLM Cognitive Layer..."):
+                # Compute telemetry using rules engine
+                valve_status, deficit_pct, water_volume = calculate_irrigation_needs(
+                    crop_type, moisture_pct, temp_c, humidity_pct
+                )
                 
-                # Metrics Section
+                # Show scientific formulas being computed
+                st.markdown("#### 📐 Embedded System Mathematics")
+                st.latex(r"V = \frac{\Delta M}{100} \times d")
+                st.caption("Where $V$ = Volumetric Water Dosage ($L/m^2$), $\Delta M$ = Moisture Deficit (%), and $d$ = Crop Root Zone Depth (mm).")
+                
+                # Metrics Display
                 metric_col1, metric_col2 = st.columns(2)
                 with metric_col1:
-                    st.metric(label="Calculated Moisture Deficit", value=f"{deficit_pct}%")
+                    st.metric(label="Calculated Moisture Deficit (ΔM)", value=f"{deficit_pct}%")
                 with metric_col2:
-                    st.metric(label="Volumetric Water Dosage", value=f"{water_volume} L/m²")
-                st.info(f"**System Log:** {valve_status}")
+                    st.metric(label="Volumetric Water Dosage Output (V)", value=f"{water_volume} L/m²")
+                    
+                st.info(f"⚙️ **PLC Solenoid State Log:** {valve_status}")
                 
-                # --- Enhanced Multi-Image Output Section ---
+                # Multi-Image Array Display
                 st.markdown("---")
-                st.markdown("#### 📸 Diagnostics Image Gallery: Multi-Track Analysis")
+                st.markdown("#### 📸 Telemetry-Matched Multi-Track Imagery")
                 images_to_display = CROP_ASSETS[crop_type]["images"]
                 img_col1, img_col2, img_col3 = st.columns(3)
-                
-                # Display 3 separate images for the single crop asset
                 with img_col1:
                     st.image(images_to_display[0]["url"], caption=images_to_display[0]["caption"], use_column_width=True)
                 with img_col2:
                     st.image(images_to_display[1]["url"], caption=images_to_display[1]["caption"], use_column_width=True)
                 with img_col3:
                     st.image(images_to_display[2]["url"], caption=images_to_display[2]["caption"], use_column_width=True)
-                # ---------------------------------------------
                 
-                # LLM reasoning layer
+                # Cognitive AI Analysis
                 try:
                     llm = ChatGroq(groq_api_key=groq_api_key, model_name="llama-3.1-8b-instant", temperature=0.1)
                     prompt = ChatPromptTemplate.from_template("""
@@ -293,12 +320,19 @@ with col_output:
                     """)
                     
                     chain = prompt | llm
-                    response = chain.invoke({"crop_type": crop_type, "moisture_pct": moisture_pct, "temp_c": temp_c, "humidity_pct": humidity_pct, "weather_forecast": weather_forecast, "water_volume": water_volume})
-                    st.markdown("### 📋 Agronomic Assessment Strategy")
+                    response = chain.invoke({
+                        "crop_type": crop_type,
+                        "moisture_pct": moisture_pct,
+                        "temp_c": temp_c,
+                        "humidity_pct": humidity_pct,
+                        "weather_forecast": weather_forecast,
+                        "water_volume": water_volume
+                    })
+                    st.markdown("### 📋 AI Cognitive Agronomic Advisory Report")
                     st.write(response.content)
                 except Exception as e:
-                    st.error(f"❌ AI Inference Failure: {str(e)}")
+                    st.error(f"❌ AI Reasoning Engine Processor Failure: {str(e)}")
     else:
-        # --- Standby Visual (Custom Lead Node Wallpaper) ---
-        st.info("System in Active-Standby Mode. Configure inputs on the left and execute to generate diagnostics.")
+        # Default starting visual output showing your custom verified graphic
+        st.info("System Standby: Awaiting sensor matrix triggers. Adjust parameters on the left to activate.")
         st.image("https://i.postimg.cc/CLyj6Nhr/Gemini-Generated-Image-o59yqgo59yqgo59y.png", caption="Lead Engineer: Sajid Ali — Precision Field Deployment", use_column_width=True)
