@@ -1,5 +1,5 @@
 """
-APEX HYDRO-AI
+AI-Powered Smart Irrigation Assistant
 Catchy & Simple AI Irrigation Companion
 
 Lead Systems Engineer: Engineer Sajid Ali
@@ -13,7 +13,7 @@ from langchain_core.prompts import ChatPromptTemplate
 # SYSTEM CONFIGURATION & UI STYLING
 # =====================================================================
 st.set_page_config(
-    page_title="APEX HYDRO-AI",
+    page_title="AI-Powered Smart Irrigation Assistant",
     page_icon="💬",
     layout="wide",
     initial_sidebar_state="expanded"
@@ -109,7 +109,7 @@ st.markdown("""
 # =====================================================================
 st.markdown("""
     <div class="ux-header">
-        <div class="header-main-title">🌾 APEX HYDRO-AI</div>
+        <div class="header-main-title">🌾 AI-POWERED SMART IRRIGATION ASSISTANT</div>
         <div class="system-status-sub">Smart Irrigation Conversational Assistant & Interface Prototyper</div>
         <div class="engineer-badge">💻 Lead Engineer: Sajid Ali, System lead</div>
     </div>
@@ -159,7 +159,7 @@ if st.sidebar.button("🗑️ Clear Chat History"):
 # Welcome card featuring centered keywords
 welcome_html = """
 <div style="text-align: center; padding: 20px;">
-    <h3 style="color: #00F2FE; margin-bottom: 10px;">Welcome to the APEX HYDRO-AI Dashboard</h3>
+    <h3 style="color: #00F2FE; margin-bottom: 10px;">Welcome to the AI-Powered Smart Irrigation Assistant Dashboard</h3>
     <p style="color: #FFFFFF; font-size: 1.05rem; margin-bottom: 20px;">
         Interactive Systems Engineering Control Room & Conversational Companion.
     </p>
@@ -218,7 +218,7 @@ if user_input:
                         history_str += f"{msg['role'].capitalize()}: {msg['content']}\n"
                         
                     prompt = ChatPromptTemplate.from_template("""
-                    You are the APEX HYDRO-AI Chatbot, an advanced agronomic AI assistant integrated into a Smart Irrigation Control Room.
+                    You are the AI-Powered Smart Irrigation Assistant Chatbot, an advanced agronomic AI assistant integrated into a Smart Irrigation Control Room.
                     The system is designed by Lead Systems Engineer Sajid Ali.
                     
                     Answer the user's query professionally, drawing on systems engineering, IoT, microcontrollers, and agronomy. Keep answers concise, highly structured, and directly related to smart farming automation.
