@@ -28,7 +28,7 @@ st.markdown("""
     }
     .block-container { padding-top: 1.5rem; }
     
-    /* Premium Title Card */
+    /* Premium Catchy Title Card */
     .ux-header {
         background: linear-gradient(135deg, rgba(20, 35, 60, 0.95) 0%, rgba(10, 20, 40, 0.95) 100%);
         border-radius: 12px;
@@ -63,15 +63,6 @@ st.markdown("""
         border: 1px solid #05B292;
         margin-top: 12px;
         box-shadow: 0 0 15px rgba(5, 178, 146, 0.2);
-    }
-
-    /* Interactive Sidebar Widgets */
-    .sidebar-widget {
-        background: rgba(20, 30, 55, 0.6);
-        border: 1px solid rgba(5, 178, 146, 0.2);
-        border-radius: 10px;
-        padding: 15px;
-        margin-bottom: 15px;
     }
 
     /* Custom styles for chat messages to fit the dark theme */
@@ -127,34 +118,10 @@ st.markdown("""
 # =====================================================================
 # SIDEBAR CONTROL DESK
 # =====================================================================
-st.sidebar.markdown("### 🔑 Gateway Authorization")
-groq_api_key = st.sidebar.text_input("Groq Cloud API Key", type="password", placeholder="gsk_...")
-
-st.sidebar.markdown("---")
-st.sidebar.markdown("### 🏷️ Quick Topic Presets")
-st.sidebar.write("Clicking these will clear current history and start a focused topic discussion.")
-
-# Quick buttons to automatically seed chats about the 5 major topics
-if st.sidebar.button("🌱 Soil Moisture Sensing"):
-    st.session_state.messages = [
-        {"role": "assistant", "content": "Let's discuss **Soil Moisture Sensing**. I can explain how FDR/TDR capacitive sensors measure relative permittivity and volumetric water content to prevent under-watering."}
-    ]
-if st.sidebar.button("🌤️ Weather Forecast Integration"):
-    st.session_state.messages = [
-        {"role": "assistant", "content": "Let's discuss **Weather Forecast Integration**. Ask me how our system uses local predictive parameters (like impending heavy storms) to postpone irrigation cycles and save water."}
-    ]
-if st.sidebar.button("🧠 ML Optimization"):
-    st.session_state.messages = [
-        {"role": "assistant", "content": "Let's discuss **Machine Learning Optimization**. I can explain how we use regression modeling to adjust crop water dosage based on ambient humidity and temperature evaporation indexes."}
-    ]
-if st.sidebar.button("📱 Remote Monitoring & Control"):
-    st.session_state.messages = [
-        {"role": "assistant", "content": "Let's discuss **Remote Monitoring & Control**. Ask me how web dashboards act as cyber-physical twins for ESP32 and Raspberry Pi hardware gateways."}
-    ]
-if st.sidebar.button("🔌 Automation and Control Actuators"):
-    st.session_state.messages = [
-        {"role": "assistant", "content": "Let's discuss **Automation & Control Actuators**. Ask me about the mechanics of 12V solenoid flow-control valves, pump relay triggers, and automated safety overrides."}
-    ]
+st.sidebar.markdown("### 📡 Hardware Telemetry Status")
+st.sidebar.success("● Gateway Alpha: Online")
+st.sidebar.success("● Node A (Soil Moisture): Connected")
+st.sidebar.success("● Node B (Solenoid Valve): Connected")
 
 # Clear history button
 st.sidebar.markdown("---")
@@ -164,43 +131,49 @@ if st.sidebar.button("🗑️ Clear Chat History"):
 # =====================================================================
 # DUAL DASHBOARD GRID
 # =====================================================================
-col_left_panel, col_right_chat = st.columns([4, 6], gap="large")
+col_left_panel, col_right_chat = st.columns([5, 5], gap="large")
 
-# --- LEFT PANEL: Live Controls & Centralized Keywords ---
+# --- LEFT PANEL: Centralized Logo, API Key, and Core Keywords ---
 with col_left_panel:
-    st.markdown("### 📊 Active Control Panel")
+    st.markdown("### 🛠️ Control Panel & Telemetry Specs")
     
-    # Visual, clean card displaying your centralized keywords beautifully in the middle
+    # 1. Standing Field Image / Logo (Placed Prominently)
+    st.image(
+        "https://i.postimg.cc/CLyj6Nhr/Gemini-Generated-Image-o59yqgo59yqgo59y.png", 
+        caption="System Status Reference: Lead Engineer Sajid Ali in the Field", 
+        use_column_width=True
+    )
+    
+    # 2. API Key Entry Window (Directly on the main page)
+    st.markdown("#### 🔑 AI Engine Authorization")
+    groq_api_key = st.text_input(
+        "Enter Groq Cloud API Key to unlock live Llama-3 parsing:", 
+        type="password", 
+        placeholder="gsk_..."
+    )
+    
+    # 3. Core Telemetry Keywords Centered Panel
     st.markdown("""
-        <div style="background: rgba(5, 178, 146, 0.1); border: 1px solid rgba(5, 178, 146, 0.3); border-radius: 10px; padding: 15px; margin-bottom: 20px; text-align: center;">
-            <p style="color: #05B292; font-weight: bold; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px; font-size: 0.9rem;">
+        <div style="background: rgba(5, 178, 146, 0.1); border: 1px solid rgba(5, 178, 146, 0.3); border-radius: 10px; padding: 20px; margin-top: 20px; text-align: center;">
+            <p style="color: #05B292; font-weight: bold; margin-bottom: 12px; text-transform: uppercase; letter-spacing: 1px; font-size: 1rem;">
                 Core Telemetry Framework Topics
             </p>
-            <span style="color: #FFFFFF; font-size: 0.95rem; font-weight: bold; display: block; margin: 3px 0;">🌱 Soil Moisture Sensing</span>
-            <span style="color: #FFFFFF; font-size: 0.95rem; font-weight: bold; display: block; margin: 3px 0;">🌤️ Weather Forecasting</span>
-            <span style="color: #FFFFFF; font-size: 0.95rem; font-weight: bold; display: block; margin: 3px 0;">🧠 Machine Learning Optimization</span>
-            <span style="color: #FFFFFF; font-size: 0.95rem; font-weight: bold; display: block; margin: 3px 0;">📱 Remote Monitoring & Control</span>
-            <span style="color: #FFFFFF; font-size: 0.95rem; font-weight: bold; display: block; margin: 3px 0;">🔌 Automation and Control Actuators</span>
+            <span style="color: #FFFFFF; font-size: 1.1rem; font-weight: bold; display: block; margin: 6px 0;">🌱 Soil Moisture Sensing</span>
+            <span style="color: #FFFFFF; font-size: 1.1rem; font-weight: bold; display: block; margin: 6px 0;">🌤️ Weather Forecasting</span>
+            <span style="color: #FFFFFF; font-size: 1.1rem; font-weight: bold; display: block; margin: 6px 0;">🧠 Machine Learning Optimization</span>
+            <span style="color: #FFFFFF; font-size: 1.1rem; font-weight: bold; display: block; margin: 6px 0;">📱 Remote Monitoring & Control</span>
+            <span style="color: #FFFFFF; font-size: 1.1rem; font-weight: bold; display: block; margin: 6px 0;">🔌 Automation and Control Actuators</span>
         </div>
     """, unsafe_allow_html=True)
-    
-    st.markdown("#### ⚡ Real-Time Telemetry Inputs")
-    crop_type = st.selectbox("Target Crop System Culture", ["Wheat", "Rice", "Cotton", "Vegetables"])
-    moisture_pct = st.slider("Soil Moisture Sensing - Volumetric Content (%)", 10, 100, 35)
-    temp_c = st.slider("Microclimate Weather - Local Temperature (°C)", 10, 50, 38)
-    humidity_pct = st.slider("Microclimate Weather - Relative Humidity (%)", 10, 100, 40)
-    weather_forecast = st.radio("Predictive Weather Forecast Integration (24H)", ["Sunny / Clear", "Overcast", "Heavy Rain", "Scattered Showers"])
 
-# --- RIGHT PANEL: Professional Chatbot Interface & Standby Logo Image ---
+# --- RIGHT PANEL: High-Contrast AI Chatbot Terminal ---
 with col_right_chat:
-    st.markdown("### 💬 System Assistant & Chat Interface")
+    st.markdown("### 💬 Real-Time AI Chat Assistant")
 
-    # Welcome card featuring your standing image (The Logo / Standby Image)
-    welcome_html = f"""
-    <div style="text-align: center; padding: 10px;">
-        <h3 style="color: #00F2FE; margin-bottom: 5px;">APEX HYDRO-AI Systems Active</h3>
-        <p style="color: #FFFFFF; font-size: 1rem; margin-bottom: 15px;">
-            Interactive Systems Engineering Control Room & Conversational Companion.
+    welcome_html = """
+    <div style="padding: 10px;">
+        <p style="color: #FFFFFF; font-size: 1.1rem;">
+            Ask questions regarding any of the framework topics listed on the left panel.
         </p>
     </div>
     """
@@ -210,8 +183,7 @@ with col_right_chat:
         st.session_state.messages = [
             {
                 "role": "assistant", 
-                "content": welcome_html,
-                "show_logo": True  # Flag to render the field photo standby logo
+                "content": welcome_html
             }
         ]
 
@@ -219,16 +191,9 @@ with col_right_chat:
     for msg in st.session_state.messages:
         with st.chat_message(msg["role"]):
             st.markdown(msg["content"], unsafe_allow_html=True)
-            # If this is the starting message, load your standing field image right below it!
-            if msg.get("show_logo"):
-                st.image(
-                    "https://i.postimg.cc/CLyj6Nhr/Gemini-Generated-Image-o59yqgo59yqgo59y.png", 
-                    caption="Lead Engineer: Sajid Ali — Precision Field Deployment Node", 
-                    use_column_width=True
-                )
 
     # Accept user chat input
-    user_input = st.chat_input("Type your smart irrigation query here...")
+    user_input = st.chat_input("Ask about Soil Moisture, Weather, ML, Remote Control...")
 
     if user_input:
         # 1. Display user's message in the thread
@@ -334,7 +299,7 @@ with col_right_chat:
                             "I am ready to discuss any aspects of our precision irrigation framework! "
                             "Please ask me a question about **Soil Moisture Probes**, **Weather API Delays**, **ML Water Scaling**, "
                             "**Remote Web Interfaces**, or **Solenoid Relay Valves**.\n\n"
-                            "*(To unlock the fully conversational, custom AI assistant, simply enter your Groq Cloud API key in the sidebar dashboard!)*"
+                            "*(To unlock the fully conversational, custom AI assistant, simply enter your Groq Cloud API key in the main panel input window!)*"
                         )
                         
                     # Display response
