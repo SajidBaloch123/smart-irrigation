@@ -2,6 +2,8 @@
 Smart Irrigation Interface Prototyper & GitHub Discovery Engine
 Systems Engineering UI/UX Design Console
 
+Lead Systems Engineer: Engineer Sajid Ali
+
 This application serves as an educational and prototyping platform for developing 
 user-friendly interfaces in precision agriculture. It integrates live GitHub API 
 querying to discover existing open-source solutions alongside interactive UI/UX prototyping tools.
@@ -47,9 +49,22 @@ st.markdown("""
     }
     .system-status-sub {
         color: #05B292;
-        font-size: 1rem;
+        font-size: 1.1rem;
         font-weight: 700;
         margin-top: 5px;
+        letter-spacing: 1px;
+    }
+    .engineer-badge {
+        background: rgba(5, 178, 146, 0.15);
+        color: #00F2FE;
+        padding: 6px 20px;
+        border-radius: 20px;
+        font-weight: 800;
+        display: inline-block;
+        font-size: 0.95rem;
+        border: 1px solid #05B292;
+        margin-top: 12px;
+        box-shadow: 0 0 15px rgba(5, 178, 146, 0.2);
     }
 
     /* Glassmorphic Cards */
@@ -99,12 +114,13 @@ def query_github_repositories(keyword):
     return []
 
 # =====================================================================
-# MAIN HEADER
+# MAIN HEADER WITH INTEGRATED ENGINEER SIGNATURE
 # =====================================================================
 st.markdown("""
     <div class="ux-header">
         <div class="header-main-title">🌾 IRRIGATION UX & DISCOVERY CONSOLE</div>
         <div class="system-status-sub">Interactivity Prototyper & GitHub Repository Scanner</div>
+        <div class="engineer-badge">💻 Lead Engineer: Sajid Ali, System lead</div>
     </div>
 """, unsafe_allow_html=True)
 
