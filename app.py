@@ -1,5 +1,5 @@
 """
-Smart Irrigation Interface Prototyper & GitHub Discovery Engine
+APEX-I HydroCognitive Interface
 Systems Engineering UI/UX Design Console
 
 Lead Systems Engineer: Engineer Sajid Ali
@@ -16,7 +16,7 @@ import requests
 # SYSTEM CONFIGURATION & UI STYLING
 # =====================================================================
 st.set_page_config(
-    page_title="Irrigation UX & Discovery Console",
+    page_title="APEX-I HydroCognitive Interface",
     page_icon="🖥️",
     layout="wide",
     initial_sidebar_state="expanded"
@@ -45,7 +45,8 @@ st.markdown("""
         color: #00F2FE;
         font-size: 2.3rem;
         font-weight: 900;
-        letter-spacing: 1px;
+        letter-spacing: 2px;
+        text-shadow: 0 0 15px rgba(0,242,254,0.4);
     }
     .system-status-sub {
         color: #05B292;
@@ -114,12 +115,12 @@ def query_github_repositories(keyword):
     return []
 
 # =====================================================================
-# MAIN HEADER WITH INTEGRATED ENGINEER SIGNATURE
+# MAIN HEADER WITH NEW PROFESSIONAL TITLE & ENGINEER SIGNATURE
 # =====================================================================
 st.markdown("""
     <div class="ux-header">
-        <div class="header-main-title">🌾 IRRIGATION UX & DISCOVERY CONSOLE</div>
-        <div class="system-status-sub">Interactivity Prototyper & GitHub Repository Scanner</div>
+        <div class="header-main-title">🌾 APEX-I HYDROCOGNITIVE INTERFACE</div>
+        <div class="system-status-sub">Advanced Interaction Prototyper & Open-Source Discovery Console</div>
         <div class="engineer-badge">💻 Lead Engineer: Sajid Ali, System lead</div>
     </div>
 """, unsafe_allow_html=True)
