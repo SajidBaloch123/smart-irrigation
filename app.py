@@ -1,6 +1,6 @@
 """
-APEX HYDRO-AI
-Catchy & Simple AI Irrigation Companion
+AI-Powered Smart Irrigation Assistant
+Interactive Clickable Controls & Conversational Companion
 
 Lead Systems Engineer: Engineer Sajid Ali
 """
@@ -13,13 +13,13 @@ from langchain_core.prompts import ChatPromptTemplate
 # SYSTEM CONFIGURATION & UI STYLING
 # =====================================================================
 st.set_page_config(
-    page_title="APEX HYDRO-AI",
+    page_title="AI-Powered Smart Irrigation Assistant",
     page_icon="💬",
     layout="wide",
     initial_sidebar_state="expanded"
 )
 
-# Premium Obsidian Slate UI styling
+# Premium Obsidian Slate UI styling with custom Clickable CSS Button animations
 st.markdown("""
     <style>
     .stApp {
@@ -101,15 +101,24 @@ st.markdown("""
     div[data-testid="stChatInput"] textarea::placeholder {
         color: #555555 !important;
     }
+
+    /* Sleek Custom Interactive CSS Buttons for Options */
+    .option-btn-container {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        align-items: center;
+        margin-top: 15px;
+    }
     </style>
 """, unsafe_allow_html=True)
 
 # =====================================================================
-# MAIN HEADER WITH NEW PROFESSIONAL TITLE & ENGINEER SIGNATURE
+# MAIN HEADER WITH PROFESSIONAL TITLE & ENGINEER SIGNATURE
 # =====================================================================
 st.markdown("""
     <div class="ux-header">
-        <div class="header-main-title">🌾 APEX HYDRO-AI</div>
+        <div class="header-main-title">🌾 AI-POWERED SMART IRRIGATION ASSISTANT</div>
         <div class="system-status-sub">Smart Irrigation Conversational Assistant & Interface Prototyper</div>
         <div class="engineer-badge">💻 Lead Engineer: Sajid Ali, System lead</div>
     </div>
@@ -156,53 +165,76 @@ if st.sidebar.button("🗑️ Clear Chat History"):
 # CHAT LOGIC AND STATE MANAGEMENT
 # =====================================================================
 
-# Welcome card featuring centered keywords
-welcome_html = """
-<div style="text-align: center; padding: 20px;">
-    <h3 style="color: #00F2FE; margin-bottom: 10px;">Welcome to the APEX HYDRO-AI Dashboard</h3>
-    <p style="color: #FFFFFF; font-size: 1.05rem; margin-bottom: 20px;">
-        Interactive Systems Engineering Control Room & Conversational Companion.
-    </p>
-    <div style="background: rgba(5, 178, 146, 0.1); border: 1px solid rgba(5, 178, 146, 0.3); border-radius: 10px; display: inline-block; padding: 20px 40px;">
-        <p style="color: #05B292; font-weight: bold; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px;">
-            Core Telemetry Framework Topics:
-        </p>
-        <p style="color: #FFFFFF; margin: 5px 0; font-size: 1.1rem; font-weight: bold;">🌱 Soil Moisture Sensing</p>
-        <p style="color: #FFFFFF; margin: 5px 0; font-size: 1.1rem; font-weight: bold;">🌤️ Weather Forecasting</p>
-        <p style="color: #FFFFFF; margin: 5px 0; font-size: 1.1rem; font-weight: bold;">🧠 Machine Learning Optimization</p>
-        <p style="color: #FFFFFF; margin: 5px 0; font-size: 1.1rem; font-weight: bold;">📱 Remote Monitoring & Control</p>
-        <p style="color: #FFFFFF; margin: 5px 0; font-size: 1.1rem; font-weight: bold;">🔌 Automation and Control Actuators</p>
-    </div>
-    <p style="color: #888888; font-size: 0.9rem; margin-top: 20px;">
-        Type a question below or choose a preset in the sidebar control panel to begin.
-    </p>
-</div>
-"""
-
 # Initialize session state for holding messages if empty
 if "messages" not in st.session_state or len(st.session_state.messages) == 0:
-    st.session_state.messages = [
-        {
-            "role": "assistant", 
-            "content": welcome_html
-        }
-    ]
+    st.session_state.messages = []
+
+# If history is empty, show the beautiful centered welcomes card with clickable buttons
+if len(st.session_state.messages) == 0:
+    st.markdown("""
+    <div style="text-align: center; padding: 20px;">
+        <h3 style="color: #00F2FE; margin-bottom: 10px;">Welcome to the AI-Powered Smart Irrigation Assistant Dashboard</h3>
+        <p style="color: #FFFFFF; font-size: 1.05rem; margin-bottom: 20px;">
+            Interactive Systems Engineering Control Room & Conversational Companion.
+        </p>
+    </div>
+    """, unsafe_allow_html=True)
+    
+    # Centered container for buttons
+    left_spacer, center_btn_col, right_spacer = st.columns([2, 6, 2])
+    
+    with center_btn_col:
+        st.markdown("""
+            <div style="background: rgba(5, 178, 146, 0.1); border: 1px solid rgba(5, 178, 146, 0.3); border-radius: 10px; padding: 20px; text-align: center; margin-bottom: 15px;">
+                <p style="color: #05B292; font-weight: bold; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 1px;">
+                    Click a Core Topic below to instantly initiate analysis:
+                </p>
+            </div>
+        """, unsafe_allow_html=True)
+        
+        # Streamlit-native styled buttons aligned cleanly in a centered layout
+        if st.button("🌱 Click here to discuss: Soil Moisture Sensing"):
+            st.session_state.messages.append({"role": "user", "content": "Tell me about Soil Moisture Sensing"})
+            st.rerun()
+            
+        if st.button("🌤️ Click here to discuss: Weather Forecasting"):
+            st.session_state.messages.append({"role": "user", "content": "Tell me about Weather Forecasting"})
+            st.rerun()
+            
+        if st.button("🧠 Click here to discuss: Machine Learning Optimization"):
+            st.session_state.messages.append({"role": "user", "content": "Tell me about Machine Learning Optimization"})
+            st.rerun()
+            
+        if st.button("📱 Click here to discuss: Remote Monitoring & Control"):
+            st.session_state.messages.append({"role": "user", "content": "Tell me about Remote Monitoring & Control"})
+            st.rerun()
+            
+        if st.button("🔌 Click here to discuss: Automation and Control Actuators"):
+            st.session_state.messages.append({"role": "user", "content": "Tell me about Automation and Control Actuators"})
+            st.rerun()
 
 # Display all messages in history
 for msg in st.session_state.messages:
     with st.chat_message(msg["role"]):
         st.markdown(msg["content"], unsafe_allow_html=True)
 
-# Accept user chat input
+# Accept user chat input or respond to clicked buttons
 user_input = st.chat_input("Type your smart irrigation query here...")
 
-if user_input:
-    # 1. Display user's message in the thread
-    with st.chat_message("user"):
-        st.markdown(user_input)
-    st.session_state.messages.append({"role": "user", "content": user_input})
+# If we have a user input (either from chat box or from the buttons)
+if user_input or (len(st.session_state.messages) > 0 and st.session_state.messages[-1]["role"] == "user" and len(st.session_state.messages) % 2 != 0):
     
-    # 2. Generate and display assistant's response
+    # If it was entered from the chat_input box, we append it
+    if user_input:
+        with st.chat_message("user"):
+            st.markdown(user_input)
+        st.session_state.messages.append({"role": "user", "content": user_input})
+        query_to_process = user_input
+    else:
+        # It came from a button click trigger
+        query_to_process = st.session_state.messages[-1]["content"]
+    
+    # Generate and display assistant's response
     with st.chat_message("assistant"):
         message_placeholder = st.empty()
         
@@ -218,7 +250,7 @@ if user_input:
                         history_str += f"{msg['role'].capitalize()}: {msg['content']}\n"
                         
                     prompt = ChatPromptTemplate.from_template("""
-                    You are the APEX HYDRO-AI Chatbot, an advanced agronomic AI assistant integrated into a Smart Irrigation Control Room.
+                    You are the AI-Powered Smart Irrigation Assistant Chatbot, an advanced agronomic AI assistant integrated into a Smart Irrigation Control Room.
                     The system is designed by Lead Systems Engineer Sajid Ali.
                     
                     Answer the user's query professionally, drawing on systems engineering, IoT, microcontrollers, and agronomy. Keep answers concise, highly structured, and directly related to smart farming automation.
@@ -226,11 +258,11 @@ if user_input:
                     Recent conversation history:
                     {history_str}
                     
-                    User query: {user_input}
+                    User query: {query_to_process}
                     """)
                     
                     chain = prompt | llm
-                    response = chain.invoke({"history_str": history_str, "user_input": user_input})
+                    response = chain.invoke({"history_str": history_str, "query_to_process": query_to_process})
                     assistant_response = response.content
                     message_placeholder.markdown(assistant_response)
             except Exception as e:
@@ -240,7 +272,7 @@ if user_input:
         # Scenario B: No API key (Runs a smart agricultural simulator response)
         else:
             with st.spinner("Processing telemetry database simulations..."):
-                query_lower = user_input.lower()
+                query_lower = query_to_process.lower()
                 
                 # Intelligent keyword mapping fallback
                 if "moisture" in query_lower or "sensor" in query_lower or "soil" in query_lower:
@@ -308,3 +340,4 @@ if user_input:
                 
         # Save the assistant response to chat history
         st.session_state.messages.append({"role": "assistant", "content": assistant_response})
+        st.rerun()
